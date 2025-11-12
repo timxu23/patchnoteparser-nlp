@@ -49,22 +49,20 @@ Raze            Blast Pack           NERF        SIGNIFICANT  75 → 50 damage
 Raze            Blast Pack           NEUTRAL     MODERATE     Damage to objects now consistently does 600
 ```
 
-## Limitations (Prototype)
+## Limitations
 
-- Simple keyword-based entity extraction (not ML-based)
 - Basic regex patterns for numerical changes
 - Heuristic-based direction detection
 - Limited handling of edge cases and ambiguous phrasing
-- No learning from annotated data
 
 ## Future Improvements
 
 - Machine learning models for entity extraction (NER)
 - Fine-tuned classification models for direction and magnitude
-- Better handling of context-dependent changes (e.g., cooldown increases = nerf)
+- Better handling of context-dependent changes
 - Support for more games (League of Legends, Dota 2, Overwatch)
 - Trend visualization over multiple patches
-- Evaluation on held-out test set
+- Pull patch notes from official Valorant website to summarize past changes
 
 ## Requirements
 
