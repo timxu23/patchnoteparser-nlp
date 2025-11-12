@@ -1,0 +1,24 @@
+**RAZE**
+
+**Showstopper**
+- Equip Time increased 1.1 >>> 1.4
+- Quick Equip Time increased 0.5 >>> 0.7
+- VFX reduced when firing rocket
+- VFX on rocket's trail slightly reduced
+
+**Blast Pack**
+- Damage decreased 75 >>> 50
+- Damage to objects now consistently does 600
+
+---
+
+**JETT**
+
+**Tailwind (Dash)**
+- Dash window decreased 12 >>> 7.5 seconds
+- Activation delay increased 0.75 >>> 1.0 seconds
+
+**Cloudburst (Smoke)**
+- Duration increased 4.0 >>> 4.5 seconds
+- Smoke now blocks vision more effectively
+
