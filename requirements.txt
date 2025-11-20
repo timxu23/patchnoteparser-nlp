@@ -1,12 +1,2 @@
-# Requirements for Patch Note Parser Prototype
-# This prototype uses only Python standard library - no external dependencies required
-
-# Python 3.7+ required
-# No additional packages needed for the prototype
-
-# For future enhancements, you may want to add:
-# - spacy or nltk for better NLP
-# - transformers for fine-tuned models
-# - pandas for data analysis
-# - matplotlib for visualizations
-
+# Requirements for Patch Note Parser
+beautifulsoup4>=4.12.0
