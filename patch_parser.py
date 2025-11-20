@@ -1,18 +1,22 @@
 """
 Prototype: Summarization of Valorant Patch Notes
 
-This prototype extracts entities and classifies balance changes (buffs, nerfs, neutral)
-from Valorant patch notes with approximate magnitude estimation.
+This version integrates Pandas DataFrames for structured historical tracking and summary.
 
-Notes:
-next want to also categorize total changes by agent 
+Improvements:
+- Added 'patch_version' to BalanceChange dataclass.
+- Added method to convert changes into a Pandas DataFrame.
+- Updated main() to use DataFrame for categorization and summary statistics.
 """
 
 import re
+import pandas as pd
 from typing import List, Dict, Tuple, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from enum import Enum
+import sys
 
+                    # ========== [Heuristics] ===========
 
 class ChangeDirection(Enum):
     BUFF = "buff"
@@ -29,6 +33,8 @@ class Magnitude(Enum):
 @dataclass
 class BalanceChange:
     """Represents a single balance change extracted from patch notes."""
+    # added patch_version for historical tracking
+    patch_version: str 
     agent: str
     ability: Optional[str]
     description: str
@@ -76,11 +82,8 @@ class PatchNoteParser:
             re.IGNORECASE
         )
         
-        # Pattern to match percentage changes
-        self.percent_pattern = re.compile(r'(\d+\.?\d*)%', re.IGNORECASE)
-        
         # Pattern to match units (seconds, damage, etc.)
-        self.unit_pattern = re.compile(r'\b(seconds?|sec|damage|hp|health|armor|cost|cooldown|duration|range|radius)\b', re.IGNORECASE)
+        self.unit_pattern = re.compile(r'\b(seconds?|sec|damage|hp|health|armor|cost|cooldown|duration|range|radius|ms|m)\b', re.IGNORECASE)
     
     def extract_agent(self, text: str) -> Optional[str]:
         """Extract agent name from text."""
@@ -92,7 +95,6 @@ class PatchNoteParser:
     
     def extract_ability(self, text: str, agent: str) -> Optional[str]:
         """Extract ability name from text (usually in bold or after agent name)."""
-        # Look for common ability patterns
         ability_patterns = [
             r'\*\*([^*]+)\*\*',  # Bold text
             r'^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)',  # Title case words
@@ -102,70 +104,51 @@ class PatchNoteParser:
             matches = re.findall(pattern, text)
             for match in matches:
                 if match and match != agent and len(match) > 2:
-                    # Filter out common non-ability words
                     if match.lower() not in ['agent', 'ability', 'weapon', 'update', 'patch']:
                         return match.strip()
         return None
     
     def detect_direction(self, text: str) -> ChangeDirection:
-        """Detect if change is a buff, nerf, or neutral."""
+        """Detect if change is a buff, nerf, or neutral using keywords and numerical context."""
         text_lower = text.lower()
         
         buff_count = sum(1 for keyword in self.BUFF_KEYWORDS if keyword in text_lower)
         nerf_count = sum(1 for keyword in self.NERF_KEYWORDS if keyword in text_lower)
         neutral_count = sum(1 for keyword in self.NEUTRAL_KEYWORDS if keyword in text_lower)
         
-        # Check for numerical direction
-        num_match = self.number_pattern.search(text)
-        if num_match:
-            old_val = float(num_match.group(1))
-            new_val = float(num_match.group(2))
-            
-            # Determine direction from numerical change
-            # Context matters: for cooldown/equip time (negative attributes), increase = nerf, decrease = buff
-            # For damage/duration/range/health (positive attributes), increase = buff, decrease = nerf
-            context = text_lower
-            
-            # Things where higher = worse (nerf if increased)
-            # These are costs, delays, and cooldowns - things you want less of
-            negative_attributes = ['cooldown', 'cost', 'equip time', 'activation delay', 
-                                 'delay', 'recharge time', 'reload time', 'cast time']
-            
-            # Things where higher = better (buff if increased)
-            # These are benefits - things you want more of
-            positive_attributes = ['damage', 'duration', 'range', 'health', 'hp', 'armor', 'speed', 
-                                 'radius', 'size', 'amount', 'count', 'shield', 'window']
-            
-            # Determine direction based on attribute type and change direction
-            # For negative attributes (cooldown, cost, delays): increase = nerf, decrease = buff
-            # For positive attributes (damage, duration, range, health): increase = buff, decrease = nerf
-            
-            has_negative_attr = any(word in context for word in negative_attributes)
-            has_positive_attr = any(word in context for word in positive_attributes)
-            
-            if has_negative_attr:
-                # For negative attributes: higher value = worse
-                if new_val > old_val:
-                    nerf_count += 3
-                elif new_val < old_val:
-                    buff_count += 3
-            elif has_positive_attr:
-                # For positive attributes: higher value = better
-                if new_val > old_val:
-                    buff_count += 3
-                elif new_val < old_val:
-                    nerf_count += 3
-            else:
-                # Unknown attribute: use keyword hints or default
-                if new_val > old_val:
-                    buff_count += 1
-                elif new_val < old_val:
-                    nerf_count += 1
+        # Things where higher = worse (nerf if increased): costs, delays, cooldowns
+        negative_attributes = ['cooldown', 'cost', 'equip time', 'activation delay', 
+                             'delay', 'recharge time', 'reload time', 'cast time', 'ms']
+        # Things where higher = better (buff if increased): damage, duration, range, health
+        positive_attributes = ['damage', 'duration', 'range', 'health', 'hp', 'armor', 'speed', 
+                             'radius', 'size', 'amount', 'count', 'shield', 'window', 'm']
+
+        # Prioritize numerical change + context over keywords
+        old_val, new_val, _ = self.extract_values(text)
         
+        if old_val is not None and new_val is not None and old_val != new_val:
+            is_increase = new_val > old_val
+            is_decrease = new_val < old_val
+            
+            has_negative_attr = any(word in text_lower for word in negative_attributes)
+            has_positive_attr = any(word in text_lower for word in positive_attributes)
+
+            # Weight numerical changes heavily based on context
+            if has_negative_attr:
+                if is_increase: nerf_count += 5  # Cost increase = Nerf
+                if is_decrease: buff_count += 5  # Cooldown decrease = Buff
+            elif has_positive_attr:
+                if is_increase: buff_count += 5  # Damage increase = Buff
+                if is_decrease: nerf_count += 5  # Health decrease = Nerf
+            else:
+                # Fallback to general numerical direction if context is unknown
+                if is_increase: buff_count += 1
+                if is_decrease: nerf_count += 1
+
         # Determine final direction
-        if buff_count > nerf_count and buff_count > neutral_count:
+        if buff_count > nerf_count and buff_count > 0:
             return ChangeDirection.BUFF
-        elif nerf_count > buff_count and nerf_count > neutral_count:
+        elif nerf_count > buff_count and nerf_count > 0:
             return ChangeDirection.NERF
         else:
             return ChangeDirection.NEUTRAL
@@ -176,9 +159,9 @@ class PatchNoteParser:
         text_lower = text.lower()
         
         # Check for magnitude keywords
-        if any(word in text_lower for word in ['slightly', 'minor', 'small', 'smaller']):
+        if any(word in text_lower for word in ['slightly', 'minor', 'small', 'marginal']):
             return Magnitude.MINOR
-        if any(word in text_lower for word in ['significantly', 'major', 'large', 'dramatically']):
+        if any(word in text_lower for word in ['significantly', 'major', 'large', 'dramatically', 'huge']):
             return Magnitude.SIGNIFICANT
         
         # Calculate percentage change if we have values
@@ -202,8 +185,11 @@ class PatchNoteParser:
         # Try to match numerical pattern
         num_match = self.number_pattern.search(text)
         if num_match:
-            old_val = float(num_match.group(1))
-            new_val = float(num_match.group(2))
+            try:
+                old_val = float(num_match.group(1))
+                new_val = float(num_match.group(2))
+            except ValueError:
+                pass # Catch cases where conversion to float fails
         
         # Extract unit
         unit_match = self.unit_pattern.search(text)
@@ -212,14 +198,13 @@ class PatchNoteParser:
         
         return old_val, new_val, unit
     
-    def parse_patch_note(self, patch_text: str) -> List[BalanceChange]:
+    def parse_patch_note(self, patch_version: str, patch_text: str) -> List[BalanceChange]:
         """Parse patch notes and extract all balance changes."""
         changes = []
         
         current_agent = None
         current_ability = None
         
-        # Process line by line to track agent and ability context
         lines = patch_text.split('\n')
         
         for line in lines:
@@ -227,29 +212,29 @@ class PatchNoteParser:
             if not line:
                 continue
             
-            # Check if this line is an agent name (bold or standalone)
+            # --- Context Tracking (Agent/Ability) ---
+            
+            # Check for agent name (bold or standalone)
             agent_match = re.search(r'\*\*([A-Z][A-Z\s]+)\*\*', line)
             if agent_match:
                 potential_agent = agent_match.group(1).strip()
-                # Find matching agent from list to preserve proper casing
                 for agent in self.AGENTS:
                     if agent.upper() == potential_agent.upper():
                         current_agent = agent
                         current_ability = None
                         continue
-            
-            # Also check for agent name without bold
+
+            # Check for agent name without bold
             agent = self.extract_agent(line)
-            if agent and len(line) < 20:  # Likely just an agent header
-                current_agent = agent  # extract_agent already returns proper case
+            if agent and len(line) < 20:
+                current_agent = agent
                 current_ability = None
                 continue
             
-            # Skip if no agent found yet
             if not current_agent:
                 continue
             
-            # Check if this line is an ability name (bold text that's not an agent)
+            # Check for ability name
             ability_match = re.search(r'\*\*([^*]+)\*\*', line)
             if ability_match:
                 potential_ability = ability_match.group(1).strip()
@@ -257,34 +242,27 @@ class PatchNoteParser:
                     current_ability = potential_ability
                     continue
             
-            # Check if this is a change line (starts with bullet point)
+            # --- Change Extraction ---
+
+            # Clean bullet points/formatting
             if line.startswith('-') or line.startswith('•'):
                 change_text = line[1:].strip()
             elif re.match(r'^[-•]\s+', line):
                 change_text = re.sub(r'^[-•]\s+', '', line).strip()
             else:
-                # Might still be a change line without bullet
                 change_text = line
             
-            # Skip if too short or looks like a header
-            if len(change_text) < 5:
+            if len(change_text) < 5 or change_text.upper() in [a.upper() for a in self.AGENTS]:
                 continue
             
-            # Skip if it's just an agent or ability name
-            if change_text.upper() in [a.upper() for a in self.AGENTS]:
-                continue
-            
-            # Extract values
+            # Extract and classify
             old_val, new_val, unit = self.extract_values(change_text)
-            
-            # Detect direction
             direction = self.detect_direction(change_text)
-            
-            # Estimate magnitude
             magnitude = self.estimate_magnitude(change_text, old_val, new_val)
             
             # Create change object
             change = BalanceChange(
+                patch_version=patch_version,
                 agent=current_agent,
                 ability=current_ability,
                 description=change_text,
@@ -299,51 +277,40 @@ class PatchNoteParser:
         
         return changes
     
-    def format_output(self, changes: List[BalanceChange]) -> str:
-        """Format changes as a structured table."""
-        output = []
-        output.append("=" * 100)
-        output.append("STRUCTURED PATCH NOTE SUMMARY")
-        output.append("=" * 100)
-        output.append("")
-        output.append(f"{'Agent':<15} {'Ability':<20} {'Direction':<10} {'Magnitude':<12} {'Change':<40}")
-        output.append("-" * 100)
+    def to_dataframe(self, changes: List[BalanceChange]) -> pd.DataFrame:
+        """Converts a list of BalanceChange objects into a Pandas DataFrame."""
+        # Convert list of dataclass objects to list of dictionaries
+        data_dicts = [asdict(change) for change in changes]
         
-        for change in changes:
-            change_desc = change.description[:38] + "..." if len(change.description) > 40 else change.description
-            if change.old_value and change.new_value:
-                change_desc = f"{change.old_value} → {change.new_value} {change.unit or ''}"
+        df = pd.DataFrame(data_dicts)
+        
+        # Convert enum types to simple strings for easier plotting/export
+        if not df.empty:
+            df['direction'] = df['direction'].apply(lambda x: x.value)
+            df['magnitude'] = df['magnitude'].apply(lambda x: x.value)
             
-            output.append(
-                f"{change.agent:<15} "
-                f"{(change.ability or 'N/A'):<20} "
-                f"{change.direction.value.upper():<10} "
-                f"{change.magnitude.value.upper():<12} "
-                f"{change_desc:<40}"
-            )
-        
-        output.append("")
-        output.append("=" * 100)
-        
-        return "\n".join(output)
+        return df
 
 
 def main():
     """Example usage with sample Valorant patch notes."""
+    
+    # Define the patch version explicitly
+    PATCH_VERSION_1 = "v8.01"
+    PATCH_VERSION_2 = "v8.02"
     
     # Sample patch note 1: Raze changes
     patch_note_1 = """
     **RAZE**
     
     **Showstopper**
-    - Equip Time increased 1.1 >>> 1.4
-    - Quick Equip Time increased 0.5 >>> 0.7
-    - VFX reduced when firing rocket
-    - VFX on rocket's trail slightly reduced
+    - Equip Time increased 1.1 >>> 1.4 seconds
+    - Quick Equip Time increased 0.5 >>> 0.7 seconds
+    - VFX reduced when firing rocket (Neutral)
     
     **Blast Pack**
-    - Damage decreased 75 >>> 50
-    - Damage to objects now consistently does 600
+    - Damage decreased 75 >>> 50 damage
+    - Damage to objects now consistently does 600 damage
     """
     
     # Sample patch note 2: Jett changes
@@ -351,48 +318,53 @@ def main():
     **JETT**
     
     **Tailwind (Dash)**
-    - Dash window decreased 12 >>> 7.5 seconds
+    - Dash window decreased 12m >>> 7.5m
     - Dash cooldown increase from 20 to 25 seconds
     - Activation delay increased 0.75 >>> 1.0 seconds
     
     **Cloudburst (Smoke)**
-    - Duration increased 4.0 >>> 4.5 seconds
-    - Smoke now blocks vision more effectively
+    - Duration increased 4.0s >>> 4.5s
+    - Smoke now blocks vision more effectively (Buff)
     """
     
     parser = PatchNoteParser()
     
-    print("Processing Patch Note 1: Raze Changes")
-    print()
-    changes_1 = parser.parse_patch_note(patch_note_1)
-    print(parser.format_output(changes_1))
-    print()
+    # --- Processing Patch 1 ---
+    changes_1 = parser.parse_patch_note(PATCH_VERSION_1, patch_note_1)
+    df1 = parser.to_dataframe(changes_1)
+    print(f"\n--- PATCH {PATCH_VERSION_1} DATA FRAME ---\n")
+    print(df1[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
     
-    print("\nProcessing Patch Note 2: Jett Changes")
-    print()
-    changes_2 = parser.parse_patch_note(patch_note_2)
-    print(parser.format_output(changes_2))
-    print()
+    # --- Processing Patch 2 ---
+    changes_2 = parser.parse_patch_note(PATCH_VERSION_2, patch_note_2)
+    df2 = parser.to_dataframe(changes_2)
+    print(f"\n--- PATCH {PATCH_VERSION_2} DATA FRAME ---\n")
+    print(df2[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
+
+    # --- Combine and Summarize ---
+    master_df = pd.concat([df1, df2], ignore_index=True)
+
+    print("\n\nMASTER DATAFRAME SUMMARY (Both Patches)")
+    print("=" * 70)
     
-    # Summary statistics
-    print("\nSUMMARY STATISTICS")
-    print("=" * 50)
-    all_changes = changes_1 + changes_2
-    buffs = sum(1 for c in all_changes if c.direction == ChangeDirection.BUFF)
-    nerfs = sum(1 for c in all_changes if c.direction == ChangeDirection.NERF)
-    neutral = sum(1 for c in all_changes if c.direction == ChangeDirection.NEUTRAL)
+    # Categorize total changes by agent (as requested in the notes)
+    agent_summary = master_df.groupby(['agent', 'direction']).size().unstack(fill_value=0)
+    agent_summary['Total'] = agent_summary.sum(axis=1)
     
-    print(f"Total changes: {len(all_changes)}")
-    print(f"Buffs: {buffs}")
-    print(f"Nerfs: {nerfs}")
-    print(f"Neutral: {neutral}")
-    print()
+    print("\n--- Balance Summary by Agent ---")
+    print(agent_summary.sort_values(by='Total', ascending=False))
     
-    # Agents affected
-    agents = set(c.agent for c in all_changes)
-    print(f"Agents affected: {', '.join(sorted(agents))}")
+    # Example of the historical structure you wanted (Agent vs. Patch)
+    print("\n--- Jett's Historical Changes (Buffs vs. Nerfs) ---")
+    jett_history = master_df[master_df['agent'] == 'Jett']
+    history_pivot = jett_history.pivot_table(
+        index='patch_version', 
+        columns='direction', 
+        aggfunc='size', 
+        fill_value=0
+    )
+    print(history_pivot)
 
 
 if __name__ == "__main__":
     main()
-    
