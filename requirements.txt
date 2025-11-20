@@ -10,3 +10,5 @@
 # - pandas for data analysis
 # - matplotlib for visualizations
 
+# Requirements for Patch Note Parser Prototype
+scikit-learn>=1.0
