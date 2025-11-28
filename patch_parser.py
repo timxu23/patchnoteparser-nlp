@@ -291,6 +291,18 @@ class PatchNoteParser:
             
         return df
 
+    def build_history_dataframe(self, patch_notes: List[Tuple[str, str]]) -> pd.DataFrame:
+        """
+        Parse multiple patch notes and return a consolidated historical DataFrame.
+
+        Args:
+            patch_notes: List of (patch_version, patch_text) tuples.
+        """
+        all_changes: List[BalanceChange] = []
+        for patch_version, patch_text in patch_notes:
+            all_changes.extend(self.parse_patch_note(patch_version, patch_text))
+
+        return self.to_dataframe(all_changes)
 
 def main():
     """Example usage with sample Valorant patch notes."""
@@ -328,27 +340,21 @@ def main():
     """
     
     parser = PatchNoteParser()
-    
-    # --- Processing Patch 1 ---
-    changes_1 = parser.parse_patch_note(PATCH_VERSION_1, patch_note_1)
-    df1 = parser.to_dataframe(changes_1)
-    print(f"\n--- PATCH {PATCH_VERSION_1} DATA FRAME ---\n")
-    print(df1[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
-    
-    # --- Processing Patch 2 ---
-    changes_2 = parser.parse_patch_note(PATCH_VERSION_2, patch_note_2)
-    df2 = parser.to_dataframe(changes_2)
-    print(f"\n--- PATCH {PATCH_VERSION_2} DATA FRAME ---\n")
-    print(df2[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
 
-    # --- Combine and Summarize ---
-    master_df = pd.concat([df1, df2], ignore_index=True)
+    # Build a historical dataframe across multiple patch versions
+    patch_history_df = parser.build_history_dataframe([
+        (PATCH_VERSION_1, patch_note_1),
+        (PATCH_VERSION_2, patch_note_2),
+    ])
 
-    print("\n\nMASTER DATAFRAME SUMMARY (Both Patches)")
+    print("\n--- PATCH HISTORY DATA FRAME ---\n")
+    print(patch_history_df[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
+
+    print("\n\nMASTER DATAFRAME SUMMARY (All Patches)")
     print("=" * 70)
     
     # Categorize total changes by agent (as requested in the notes)
-    agent_summary = master_df.groupby(['agent', 'direction']).size().unstack(fill_value=0)
+    agent_summary = patch_history_df.groupby(['agent', 'direction']).size().unstack(fill_value=0)
     agent_summary['Total'] = agent_summary.sum(axis=1)
     
     print("\n--- Balance Summary by Agent ---")
@@ -356,7 +362,7 @@ def main():
     
     # Example of the historical structure you wanted (Agent vs. Patch)
     print("\n--- Jett's Historical Changes (Buffs vs. Nerfs) ---")
-    jett_history = master_df[master_df['agent'] == 'Jett']
+    jett_history = patch_history_df[patch_history_df['agent'] == 'Jett']
     history_pivot = jett_history.pivot_table(
         index='patch_version', 
         columns='direction', 
