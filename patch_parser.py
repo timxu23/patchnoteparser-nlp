@@ -11,6 +11,8 @@ Improvements:
 
 import re
 import pandas as pd
+import argparse
+from pathlib import Path
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
@@ -305,47 +307,87 @@ class PatchNoteParser:
         return self.to_dataframe(all_changes)
 
 def main():
-    """Example usage with sample Valorant patch notes."""
-    
-    # Define the patch version explicitly
-    PATCH_VERSION_1 = "v8.01"
-    PATCH_VERSION_2 = "v8.02"
-    
-    # Sample patch note 1: Raze changes
-    patch_note_1 = """
-    **RAZE**
-    
-    **Showstopper**
-    - Equip Time increased 1.1 >>> 1.4 seconds
-    - Quick Equip Time increased 0.5 >>> 0.7 seconds
-    - VFX reduced when firing rocket (Neutral)
-    
-    **Blast Pack**
-    - Damage decreased 75 >>> 50 damage
-    - Damage to objects now consistently does 600 damage
-    """
-    
-    # Sample patch note 2: Jett changes
-    patch_note_2 = """
-    **JETT**
-    
-    **Tailwind (Dash)**
-    - Dash window decreased 12m >>> 7.5m
-    - Dash cooldown increase from 20 to 25 seconds
-    - Activation delay increased 0.75 >>> 1.0 seconds
-    
-    **Cloudburst (Smoke)**
-    - Duration increased 4.0s >>> 4.5s
-    - Smoke now blocks vision more effectively (Buff)
-    """
+    """Example usage with sample Valorant patch notes or scraped directory."""
+
+    cli = argparse.ArgumentParser(description="Parse Valorant patch notes into a dataframe.")
+    cli.add_argument(
+        "--notes-dir",
+        type=Path,
+        default=Path("public/patch-notes-test"),
+        help="Directory of scraped patch note .txt files to parse (default: public/patch-notes-test)",
+    )
+    cli.add_argument(
+        "--use-sample",
+        action="store_true",
+        help="Run with built-in sample patch notes instead of reading from disk.",
+    )
+    args = cli.parse_args()
     
     parser = PatchNoteParser()
 
-    # Build a historical dataframe across multiple patch versions
-    patch_history_df = parser.build_history_dataframe([
-        (PATCH_VERSION_1, patch_note_1),
-        (PATCH_VERSION_2, patch_note_2),
-    ])
+    # saved the old sample parsing as well here as a legacy
+    if args.use_sample:
+        PATCH_VERSION_1 = "v8.01"
+        PATCH_VERSION_2 = "v8.02"
+        
+        patch_note_1 = """
+        **RAZE**
+        
+        **Showstopper**
+        - Equip Time increased 1.1 >>> 1.4 seconds
+        - Quick Equip Time increased 0.5 >>> 0.7 seconds
+        - VFX reduced when firing rocket (Neutral)
+        
+        **Blast Pack**
+        - Damage decreased 75 >>> 50 damage
+        - Damage to objects now consistently does 600 damage
+        """
+        
+        patch_note_2 = """
+        **JETT**
+        
+        **Tailwind (Dash)**
+        - Dash window decreased 12m >>> 7.5m
+        - Dash cooldown increase from 20 to 25 seconds
+        - Activation delay increased 0.75 >>> 1.0 seconds
+        
+        **Cloudburst (Smoke)**
+        - Duration increased 4.0s >>> 4.5s
+        - Smoke now blocks vision more effectively (Buff)
+        """
+
+        patch_history_df = parser.build_history_dataframe([
+            (PATCH_VERSION_1, patch_note_1),
+            (PATCH_VERSION_2, patch_note_2),
+        ])
+    else:
+        # In scraped mode, read every .txt file in the directory, using the filename stem as patch_version.
+        if not args.notes_dir.exists() or not args.notes_dir.is_dir():
+            print(f"[ERROR] notes directory not found: {args.notes_dir}")
+            sys.exit(1)
+
+        patch_inputs: List[Tuple[str, str]] = []
+        txt_files = sorted(args.notes_dir.glob("*.txt"))
+
+        if not txt_files:
+            print(f"[ERROR] no .txt files found in {args.notes_dir}")
+            sys.exit(1)
+
+        for file_path in txt_files:
+            try:
+                text = file_path.read_text(encoding="utf-8", errors="ignore")
+            except Exception as exc:
+                print(f"[WARN] could not read {file_path}: {exc}")
+                continue
+
+            patch_version = file_path.stem or "unknown_patch"
+            patch_inputs.append((patch_version, text))
+
+        if not patch_inputs:
+            print(f"[ERROR] no readable patch notes in {args.notes_dir}")
+            sys.exit(1)
+
+        patch_history_df = parser.build_history_dataframe(patch_inputs)
 
     print("\n--- PATCH HISTORY DATA FRAME ---\n")
     print(patch_history_df[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
@@ -353,14 +395,12 @@ def main():
     print("\n\nMASTER DATAFRAME SUMMARY (All Patches)")
     print("=" * 70)
     
-    # Categorize total changes by agent (as requested in the notes)
     agent_summary = patch_history_df.groupby(['agent', 'direction']).size().unstack(fill_value=0)
     agent_summary['Total'] = agent_summary.sum(axis=1)
     
     print("\n--- Balance Summary by Agent ---")
     print(agent_summary.sort_values(by='Total', ascending=False))
     
-    # Example of the historical structure you wanted (Agent vs. Patch)
     print("\n--- Jett's Historical Changes (Buffs vs. Nerfs) ---")
     jett_history = patch_history_df[patch_history_df['agent'] == 'Jett']
     history_pivot = jett_history.pivot_table(
