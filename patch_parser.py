@@ -10,7 +10,10 @@ Improvements:
 """
 
 import re
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
@@ -53,7 +56,7 @@ class PatchNoteParser:
         "Raze", "Jett", "Phoenix", "Sage", "Sova", "Brimstone", "Viper",
         "Cypher", "Reyna", "Killjoy", "Breach", "Omen", "Skye", "Yoru",
         "Astra", "KAY/O", "Chamber", "Neon", "Fade", "Harbor", "Gekko",
-        "Deadlock", "Iso", "Clove"
+        "Deadlock", "Iso", "Clove", "Waylay"
     ]
     
     # Keywords that indicate direction
@@ -117,8 +120,9 @@ class PatchNoteParser:
         neutral_count = sum(1 for keyword in self.NEUTRAL_KEYWORDS if keyword in text_lower)
         
         # Things where higher = worse (nerf if increased): costs, delays, cooldowns
-        negative_attributes = ['cooldown', 'cost', 'equip time', 'activation delay', 
-                             'delay', 'recharge time', 'reload time', 'cast time', 'ms']
+        negative_attributes = ['cooldown', 'cost', 'equip time', 'activation delay',
+                               'delay', 'recharge time', 'reload time', 'cast time',
+                               'ms', 'ultimate points', 'ultimate point']
         # Things where higher = better (buff if increased): damage, duration, range, health
         positive_attributes = ['damage', 'duration', 'range', 'health', 'hp', 'armor', 'speed', 
                              'radius', 'size', 'amount', 'count', 'shield', 'window', 'm']
@@ -277,9 +281,11 @@ class PatchNoteParser:
         
         return changes
     
-    def to_dataframe(self, changes: List[BalanceChange]) -> pd.DataFrame:
+    def to_dataframe(self, changes: List[BalanceChange]) -> "pd.DataFrame":
         """Converts a list of BalanceChange objects into a Pandas DataFrame."""
         # Convert list of dataclass objects to list of dictionaries
+        if pd is None:
+            raise ImportError("pandas is required to convert changes into a DataFrame")
         data_dicts = [asdict(change) for change in changes]
         
         df = pd.DataFrame(data_dicts)
@@ -294,6 +300,8 @@ class PatchNoteParser:
 
 def main():
     """Example usage with sample Valorant patch notes."""
+    if pd is None:
+        raise ImportError("pandas is required to run the sample summary. Install pandas and rerun.")
     
     # Define the patch version explicitly
     PATCH_VERSION_1 = "v8.01"
