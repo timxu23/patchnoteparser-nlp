@@ -1,0 +1,25 @@
+{"text": "Aftershock (C) ticks reduced from 3 to 2", "agent": "Breach", "ability": "Aftershock", "direction": "nerf", "magnitude": "moderate"}
+{"text": "Aftershock (C) damage increased from 60 to 80 per tick", "agent": "Breach", "ability": "Aftershock", "direction": "buff", "magnitude": "moderate"}
+{"text": "Rolling Thunder (X) ultimate points increased 8>>>9", "agent": "Breach", "ability": "Rolling Thunder", "direction": "nerf", "magnitude": "minor"}
+{"text": "Prowler (C) time to re-equip gun takes slightly longer after using the ability", "agent": "Fade", "ability": "Prowler", "direction": "nerf", "magnitude": "minor"}
+{"text": "Wingman (Q) HP reduced 100>>>80", "agent": "Gekko", "ability": "Wingman", "direction": "nerf", "magnitude": "moderate"}
+{"text": "Thrash's explosion had a little makeover to make it easier to see the area it has affected", "agent": "Gekko", "ability": "Thrash", "direction": "neutral", "magnitude": "minor"}
+{"text": "Lockdown (X) ultimate points increased 8>>>9", "agent": "Killjoy", "ability": "Lockdown", "direction": "nerf", "magnitude": "minor"}
+{"text": "Guiding Light (E) max casting duration reduced 2.5s >>> 2s", "agent": "Skye", "ability": "Guiding Light", "direction": "nerf", "magnitude": "minor"}
+{"text": "Seeker health decreased 150>>>120", "agent": "Skye", "ability": "Seekers", "direction": "nerf", "magnitude": "minor"}
+{"text": "Recon Bolt (E) total number of scans reduced 3>>>2", "agent": "Sova", "ability": "Recon Bolt", "direction": "nerf", "magnitude": "minor"}
+{"text": "Cloudburst (C) duration decreased 4.5s >>> 2.5s", "agent": "Jett", "ability": "Cloudburst", "direction": "nerf", "magnitude": "moderate"}
+{"text": "Blade Storm (X) ultimate points increased 7>>>8", "agent": "Jett", "ability": "Blade Storm", "direction": "nerf", "magnitude": "minor"}
+{"text": "Spectre total spread reduced from 1.5 >>> 1.3", "agent": "Weapons", "ability": "Spectre", "direction": "buff", "magnitude": "minor"}
+{"text": "Viper's Pit (X) ultimate points increased 8>>>9", "agent": "Viper", "ability": "Viper's Pit", "direction": "nerf", "magnitude": "minor"}
+{"text": "Equip Time increased 1.1 >>> 1.4", "direction": "nerf", "magnitude": "moderate"}
+{"text": "Quick Equip Time increased 0.5 >>> 0.7", "direction": "nerf", "magnitude": "minor"}
+{"text": "VFX reduced when firing rocket", "direction": "neutral", "magnitude": "minor"}
+{"text": "VFX on rocket's trail slightly reduced", "direction": "neutral", "magnitude": "minor"}
+{"text": "Damage decreased 75 >>> 50", "direction": "nerf", "magnitude": "significant"}
+{"text": "Damage to objects now consistently does 600", "direction": "neutral", "magnitude": "moderate"}
+{"text": "Dash window decreased 12 >>> 7.5 seconds", "direction": "nerf", "magnitude": "significant"}
+{"text": "Dash cooldown increase from 20 to 25 seconds", "direction": "nerf", "magnitude": "moderate"}
+{"text": "Activation delay increased 0.75 >>> 1.0 seconds", "direction": "nerf", "magnitude": "minor"}
+{"text": "Duration increased 4.0 >>> 4.5 seconds", "direction": "buff", "magnitude": "minor"}
+{"text": "Smoke now blocks vision more effectively", "direction": "neutral", "magnitude": "moderate"}
