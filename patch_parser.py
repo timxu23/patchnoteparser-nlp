@@ -31,6 +31,7 @@ class Magnitude(Enum):
     MINOR = "minor"
     MODERATE = "moderate"
     SIGNIFICANT = "significant"
+    UNKNOWN = "unknown"
 
 
 @dataclass
@@ -81,12 +82,24 @@ class PatchNoteParser:
     def __init__(self):
         # Pattern to match numerical changes: "X >>> Y", "X -> Y", "X to Y", etc.
         self.number_pattern = re.compile(
-            r'(\d+\.?\d*)\s*(?:>>>|->|→|to|from\s+\d+\.?\d*\s+to)\s*(\d+\.?\d*)',
+            r'(\d+\.?\d*)\s*(?:>>>|->|→|to)\s*(\d+\.?\d*)',
             re.IGNORECASE
         )
-        
-        # Pattern to match units (seconds, damage, etc.)
-        self.unit_pattern = re.compile(r'\b(seconds?|sec|damage|hp|health|armor|cost|cooldown|duration|range|radius|ms|m)\b', re.IGNORECASE)
+        # from X to Y variant
+        self.number_from_to_pattern = re.compile(
+            r'from\s+(\d+\.?\d*)\s+to\s+(\d+\.?\d*)',
+            re.IGNORECASE
+        )
+        # broad unit scan
+        self.unit_pattern = re.compile(
+            r'\b(seconds?|sec|damage|hp|health|armor|cost|cooldown|duration|range|radius|ms|m)\b',
+            re.IGNORECASE
+        )
+        # inline units like "0.75s", "750ms", "12m"
+        self.inline_unit_pattern = re.compile(
+            r'(\d+\.?\d*)\s*(ms|s|sec|seconds|m)\b',
+            re.IGNORECASE
+        )
     
     def extract_agent(self, text: str) -> Optional[str]:
         """Extract agent name from text."""
@@ -114,18 +127,33 @@ class PatchNoteParser:
     def detect_direction(self, text: str) -> ChangeDirection:
         """Detect if change is a buff, nerf, or neutral using keywords and numerical context."""
         text_lower = text.lower()
-        
-        buff_count = sum(1 for keyword in self.BUFF_KEYWORDS if keyword in text_lower)
-        nerf_count = sum(1 for keyword in self.NERF_KEYWORDS if keyword in text_lower)
+
+        # minimal neutral guard: if no numbers and no core stat terms, treat as neutral
+        core_attrs = ['damage', 'cooldown', 'cost', 'duration', 'range', 'radius', 'hp', 'health',
+                      'armor', 'speed', 'reload time', 'equip time', 'activation delay', 'delay',
+                      'recharge time', 'cast time', 'ultimate points', 'ultimate point', 'count',
+                      'shield', 'window']
+        has_numbers = bool(self.number_pattern.search(text) or self.number_from_to_pattern.search(text))
+        touches_core = any(re.search(r'\b{}\b'.format(re.escape(a)), text_lower) for a in core_attrs)
+        if not has_numbers and not touches_core:
+            return ChangeDirection.NEUTRAL
+
+        # Gate generic comparatives to only count when core attributes are present
+        generic = {"more", "less", "longer", "shorter", "higher", "lower", "faster", "slower"}
+        def kw_hit(kw: str) -> bool:
+            return (kw in text_lower) and ((kw not in generic) or touches_core)
+
+        buff_count = sum(1 for keyword in self.BUFF_KEYWORDS if kw_hit(keyword))
+        nerf_count = sum(1 for keyword in self.NERF_KEYWORDS if kw_hit(keyword))
         neutral_count = sum(1 for keyword in self.NEUTRAL_KEYWORDS if keyword in text_lower)
         
-        # Things where higher = worse (nerf if increased): costs, delays, cooldowns
+        # Things where higher = worse
         negative_attributes = ['cooldown', 'cost', 'equip time', 'activation delay',
                                'delay', 'recharge time', 'reload time', 'cast time',
-                               'ms', 'ultimate points', 'ultimate point']
-        # Things where higher = better (buff if increased): damage, duration, range, health
+                               'ultimate points', 'ultimate point']
+        # Things where higher = better
         positive_attributes = ['damage', 'duration', 'range', 'health', 'hp', 'armor', 'speed', 
-                             'radius', 'size', 'amount', 'count', 'shield', 'window', 'm']
+                               'radius', 'size', 'amount', 'count', 'shield', 'window']
 
         # Prioritize numerical change + context over keywords
         old_val, new_val, _ = self.extract_values(text)
@@ -134,20 +162,22 @@ class PatchNoteParser:
             is_increase = new_val > old_val
             is_decrease = new_val < old_val
             
-            has_negative_attr = any(word in text_lower for word in negative_attributes)
-            has_positive_attr = any(word in text_lower for word in positive_attributes)
+            has_negative_attr = any(re.search(r'\b{}\b'.format(re.escape(w)), text_lower) for w in negative_attributes)
+            has_positive_attr = any(re.search(r'\b{}\b'.format(re.escape(w)), text_lower) for w in positive_attributes)
 
-            # Weight numerical changes heavily based on context
             if has_negative_attr:
-                if is_increase: nerf_count += 5  # Cost increase = Nerf
-                if is_decrease: buff_count += 5  # Cooldown decrease = Buff
+                if is_increase: nerf_count += 5
+                if is_decrease: buff_count += 5
             elif has_positive_attr:
-                if is_increase: buff_count += 5  # Damage increase = Buff
-                if is_decrease: nerf_count += 5  # Health decrease = Nerf
+                if is_increase: buff_count += 5
+                if is_decrease: nerf_count += 5
             else:
-                # Fallback to general numerical direction if context is unknown
-                if is_increase: buff_count += 1
-                if is_decrease: nerf_count += 1
+                # No clear stat: do not let bare numbers drive polarity
+                pass
+
+        # If we saw neutral words and no strong buff/nerf signal, prefer NEUTRAL
+        if neutral_count > 0 and buff_count == 0 and nerf_count == 0:
+            return ChangeDirection.NEUTRAL
 
         # Determine final direction
         if buff_count > nerf_count and buff_count > 0:
@@ -158,20 +188,29 @@ class PatchNoteParser:
             return ChangeDirection.NEUTRAL
     
     def estimate_magnitude(self, text: str, old_val: Optional[float] = None, 
-                          new_val: Optional[float] = None) -> Magnitude:
+                           new_val: Optional[float] = None,
+                           direction: Optional[ChangeDirection] = None) -> Magnitude:
         """Estimate the magnitude of change."""
         text_lower = text.lower()
+
+        # For neutral changes, treat magnitude as unknown / not applicable
+        if direction == ChangeDirection.NEUTRAL:
+            return Magnitude.UNKNOWN
         
-        # Check for magnitude keywords
+        # Keyword cues
         if any(word in text_lower for word in ['slightly', 'minor', 'small', 'marginal']):
             return Magnitude.MINOR
         if any(word in text_lower for word in ['significantly', 'major', 'large', 'dramatically', 'huge']):
             return Magnitude.SIGNIFICANT
+
+        # Domain nudge: ultimate points +/-1 is typically minor
+        if old_val is not None and new_val is not None:
+            if 'ultimate points' in text_lower and abs(new_val - old_val) == 1:
+                return Magnitude.MINOR
         
-        # Calculate percentage change if we have values
+        # Percentage change (after normalization in extract_values)
         if old_val is not None and new_val is not None and old_val != 0:
             percent_change = abs((new_val - old_val) / old_val) * 100
-            
             if percent_change < 10:
                 return Magnitude.MINOR
             elif percent_change < 30:
@@ -179,27 +218,75 @@ class PatchNoteParser:
             else:
                 return Magnitude.SIGNIFICANT
         
-        # Default to moderate if we can't determine
+        # Default when we cannot judge
         return Magnitude.MODERATE
     
     def extract_values(self, text: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
-        """Extract old and new values from text."""
+        """Extract old and new values from text. Also detect inline units and normalize."""
         old_val, new_val, unit = None, None, None
-        
-        # Try to match numerical pattern
-        num_match = self.number_pattern.search(text)
-        if num_match:
+
+        # First try: X >>> Y | X -> Y | X to Y
+        m = self.number_pattern.search(text)
+        if not m:
+            # Second try: from X to Y
+            m = self.number_from_to_pattern.search(text)
+        if m:
             try:
-                old_val = float(num_match.group(1))
-                new_val = float(num_match.group(2))
+                old_val = float(m.group(1))
+                new_val = float(m.group(2))
             except ValueError:
-                pass # Catch cases where conversion to float fails
-        
-        # Extract unit
-        unit_match = self.unit_pattern.search(text)
-        if unit_match:
-            unit = unit_match.group(1).lower()
-        
+                old_val = new_val = None
+
+        # Try to capture inline units next to the first two numbers
+        unit_old = unit_new = None
+        pairs = list(self.inline_unit_pattern.finditer(text))
+        if len(pairs) >= 2:
+            unit_old = pairs[0].group(2).lower()
+            unit_new = pairs[1].group(2).lower()
+        elif len(pairs) == 1:
+            unit_old = unit_new = pairs[0].group(2).lower()
+
+        def norm(u: Optional[str]) -> Optional[str]:
+            if not u:
+                return None
+            if u in ('sec', 'seconds', 's'):
+                return 's'
+            if u == 'ms':
+                return 'ms'
+            if u == 'm':
+                return 'm'
+            return u
+
+        unit_old = norm(unit_old)
+        unit_new = norm(unit_new)
+
+        # Normalize values if units differ (ms <-> s). Prefer seconds as base.
+        if old_val is not None and new_val is not None:
+            if unit_old and unit_new:
+                if unit_old == 'ms' and unit_new == 's':
+                    old_val = old_val / 1000.0
+                    unit_old = 's'
+                elif unit_old == 's' and unit_new == 'ms':
+                    new_val = new_val / 1000.0
+                    unit_new = 's'
+                elif unit_old == 'ms' and unit_new == 'ms':
+                    old_val /= 1000.0
+                    new_val /= 1000.0
+                    unit_old = unit_new = 's'
+
+        # Expose a single unit if both agree; otherwise try a fallback scan
+        if unit_old and unit_new and unit_old == unit_new:
+            unit = unit_old
+        else:
+            um = self.unit_pattern.search(text)
+            if um:
+                unit = um.group(1).lower()
+                # light normalization
+                if unit in ('sec', 'seconds'):
+                    unit = 's'
+                if unit == 'ms':
+                    unit = 'ms'
+
         return old_val, new_val, unit
     
     def parse_patch_note(self, patch_version: str, patch_text: str) -> List[BalanceChange]:
@@ -217,8 +304,6 @@ class PatchNoteParser:
                 continue
             
             # --- Context Tracking (Agent/Ability) ---
-            
-            # Check for agent name (bold or standalone)
             agent_match = re.search(r'\*\*([A-Z][A-Z\s]+)\*\*', line)
             if agent_match:
                 potential_agent = agent_match.group(1).strip()
@@ -226,9 +311,10 @@ class PatchNoteParser:
                     if agent.upper() == potential_agent.upper():
                         current_agent = agent
                         current_ability = None
-                        continue
+                        break
+                # do not treat header lines as changes
+                continue
 
-            # Check for agent name without bold
             agent = self.extract_agent(line)
             if agent and len(line) < 20:
                 current_agent = agent
@@ -238,7 +324,6 @@ class PatchNoteParser:
             if not current_agent:
                 continue
             
-            # Check for ability name
             ability_match = re.search(r'\*\*([^*]+)\*\*', line)
             if ability_match:
                 potential_ability = ability_match.group(1).strip()
@@ -248,7 +333,6 @@ class PatchNoteParser:
             
             # --- Change Extraction ---
 
-            # Clean bullet points/formatting
             if line.startswith('-') or line.startswith('•'):
                 change_text = line[1:].strip()
             elif re.match(r'^[-•]\s+', line):
@@ -259,12 +343,10 @@ class PatchNoteParser:
             if len(change_text) < 5 or change_text.upper() in [a.upper() for a in self.AGENTS]:
                 continue
             
-            # Extract and classify
             old_val, new_val, unit = self.extract_values(change_text)
             direction = self.detect_direction(change_text)
-            magnitude = self.estimate_magnitude(change_text, old_val, new_val)
+            magnitude = self.estimate_magnitude(change_text, old_val, new_val, direction)
             
-            # Create change object
             change = BalanceChange(
                 patch_version=patch_version,
                 agent=current_agent,
@@ -276,21 +358,18 @@ class PatchNoteParser:
                 new_value=new_val,
                 unit=unit
             )
-            
             changes.append(change)
         
         return changes
     
     def to_dataframe(self, changes: List[BalanceChange]) -> "pd.DataFrame":
         """Converts a list of BalanceChange objects into a Pandas DataFrame."""
-        # Convert list of dataclass objects to list of dictionaries
         if pd is None:
             raise ImportError("pandas is required to convert changes into a DataFrame")
         data_dicts = [asdict(change) for change in changes]
         
         df = pd.DataFrame(data_dicts)
         
-        # Convert enum types to simple strings for easier plotting/export
         if not df.empty:
             df['direction'] = df['direction'].apply(lambda x: x.value)
             df['magnitude'] = df['magnitude'].apply(lambda x: x.value)
@@ -303,11 +382,9 @@ def main():
     if pd is None:
         raise ImportError("pandas is required to run the sample summary. Install pandas and rerun.")
     
-    # Define the patch version explicitly
     PATCH_VERSION_1 = "v8.01"
     PATCH_VERSION_2 = "v8.02"
     
-    # Sample patch note 1: Raze changes
     patch_note_1 = """
     **RAZE**
     
@@ -321,7 +398,6 @@ def main():
     - Damage to objects now consistently does 600 damage
     """
     
-    # Sample patch note 2: Jett changes
     patch_note_2 = """
     **JETT**
     
@@ -337,32 +413,27 @@ def main():
     
     parser = PatchNoteParser()
     
-    # --- Processing Patch 1 ---
     changes_1 = parser.parse_patch_note(PATCH_VERSION_1, patch_note_1)
     df1 = parser.to_dataframe(changes_1)
     print(f"\n--- PATCH {PATCH_VERSION_1} DATA FRAME ---\n")
     print(df1[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
     
-    # --- Processing Patch 2 ---
     changes_2 = parser.parse_patch_note(PATCH_VERSION_2, patch_note_2)
     df2 = parser.to_dataframe(changes_2)
     print(f"\n--- PATCH {PATCH_VERSION_2} DATA FRAME ---\n")
     print(df2[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
 
-    # --- Combine and Summarize ---
     master_df = pd.concat([df1, df2], ignore_index=True)
 
     print("\n\nMASTER DATAFRAME SUMMARY (Both Patches)")
     print("=" * 70)
     
-    # Categorize total changes by agent (as requested in the notes)
     agent_summary = master_df.groupby(['agent', 'direction']).size().unstack(fill_value=0)
     agent_summary['Total'] = agent_summary.sum(axis=1)
     
     print("\n--- Balance Summary by Agent ---")
     print(agent_summary.sort_values(by='Total', ascending=False))
     
-    # Example of the historical structure you wanted (Agent vs. Patch)
     print("\n--- Jett's Historical Changes (Buffs vs. Nerfs) ---")
     jett_history = master_df[master_df['agent'] == 'Jett']
     history_pivot = jett_history.pivot_table(
