@@ -1,0 +1,62 @@
+VALORANT Patch Notes 11.11VALORANT Patch Notes 11.11Minor UI updates, Bug Fixes, VP gifting, and a festive surprise coming soon.Game UpdatesKenny “Karnifexlol“ Cameron2025-12-02T14:00:00.000ZHey, everyone! Kenny, here.
+If this patch looks tiny to you, well, that’s because it is. Or is it…? There might just be a lil’ festive surprise around the corner that we’re not listing here quite yet. Hehe.
+Other than that, we’ve got:
+UI improvements to the Agents page
+A way to gift VP to your friends. Just in time for the holidays.
+More bug fixes.
+And a small Ranked Gun Buddy issue for you to be aware of.
+This will be the last patch of 2025! Riot will be on Holiday break when our next patch would normally come out, so we’ll see you all back here next year with…a few more surprises up our sleeve.
+Until then, Happy New Year and GL HF GGs in 2026!ALL PLATFORMS
+BUG FIXES
+Agents
+Chamber:
+Fixed a bug where Rendezvous’s audio would end abruptly near the end of the teleport animation
+Clove:
+Fixed a bug where killing Clove right after they use Not Dead Yet would cause some finishers to have erratic behavior
+Fixed a bug where Clove’s agent icon in the top team composition bar would not update properly when Clove was killed inside of a smoke after using Not Dead Yet
+Fixed a bug where Clove would revive in spawn with Not Dead Yet if their body had too many players standing over it
+Fixed a bug where Clove’s Pick-Me-Up overheal UI effects would persist on the HUD even after the overheal had been reduced to 0
+Cypher:
+Fixed a bug where enemy player positions could be briefly revealed on the minimap while they are hidden by Cypher's Cyber Cage
+Fixed a bug where Cypher’s Spycam would appear to be recovered even if the camera was destroyed while being recovered
+Fixed a bug where Trapwire would appear to be visually active if Cypher was killed just before it finished arming
+Jett:
+Fixed a bug where Jett could get stuck in midair near ledges/box corners
+Harbor:
+Fixed a bug where Harbor’s Storm Surge could affect Yoru during Dimensional Drift
+Fixed a bug where Harbor’s Storm Surge would cause a dead Clove to see a Nearsight HUD effect if the Storm Surge hit their corpse.
+Fixed a bug where Harbor’s Cove would snap rotate 180 degrees when looking upwards or downwards
+Fixed a bug where Harbor’s Reckoning minimap indicator would briefly linger and block vision cones
+Fixed a bug where Harbor’s Storm Surge and Reckoning would display colored boxes on a spectator’s screen if they changed perspectives to someone who was just hit by one of the abilities
+Iso:
+Fixed a bug where Clove and Reyna would not enter Iso’s Kill Contract at full health and with full shields or overheal if they entered with damaged overheal.
+Fixed a bug where Phoenix would not get his original health and armor back when is in Run It Back and has left Iso’s Kill Contract
+Phoenix:
+Fixed a bug where Phoenix’s Hot Hands would show inaccurate healing done in the combat report
+Reyna:
+Fixed a bug where Reyna’s HUD UI prompts for Devour and Dismiss would linger on screen even if Reyna has no ability charges left
+Fixed a bug where Reyna’s overheal health was not being displayed accurately on the HUD for spectators
+Skye:
+Fixed a bug where Skye’s Regrowth was healing certain deployable abilities
+Tejo:
+Fixed a bug where Tejo’s Stealth Done could push players and give them a speed boost
+Veto:
+Fixed a bug where Veto's Crosscut could sometimes be shot through non-penetrable walls
+Vyse:
+Fixed a bug where Sova’s Recon Bolt and KAY/O’s ZERO/POINT would get stuck inside an activated Shear wall instead of being destroyed
+Maps
+Haven
+Fixed a bug on A Link near A Site that allowed for wall penetration where that should not have been possible.
+KNOWN ISSUES
+V25A3 ranked gun buddies will temporarily be shown in your collection with the incorrect name of “V25A6.”
+Don’t worry! Your buddy for the first three Acts of Season 2025 is safe.
+It will go back to its correct name and you’ll also receive your V25A6 gun buddy (if you earned an Act rank in the last three Acts of Season 2025) in the 12.00 patch.
+PC ONLY
+GENERAL UPDATES
+VP Gifting is now live!
+Ever wanted to gift a friend something but not sure what exactly they want? Well you’re in luck! VP Gifting is NOW HERE and will be rolled out in a staggered release starting December 3rd PT! Check it out on the VP purchase page in the Store.
+Agents Page UI Updates
+The Agents page has been updated to show the full roster of Agents in a grid view. You can use your mouse or arrow keys to view each Agent. It’s like before, but better, because it’s different, which is better.
+Collections UI updates from Patch 11.10 are now live in Korea!
+Related ArticlesGame Updates2025-11-11T14:00:00.000ZVALORANT Patch Notes 11.10The Harbor Rework is here! Along with QoL updates, balance updates to Clove, and bug fixes.Game Updates2025-10-28T13:00:00.000ZVALORANT Patch Notes 11.09MFA added for shared accounts, quality of life updates, and bug fixes.Game Updates2025-10-14T13:00:00.000ZVALORANT Patch Notes 11.08VALAPALOOZA! Agents, maps, & weapon changes arrive to bring the game more in line with our long-term vision of VALORANT.Game Updates2025-10-07T13:00:00.000ZVALORANT Patch Notes 11.07bVeto is out and Skirmish is live.Game Updates2025-09-30T13:00:00.000ZVALORANT Patch Notes 11.07Visual clarity updates, consistent information across abilities, new customs-only game mode, and more.Game Updates2025-09-16T13:00:00.000ZVALORANT Patch Notes 11.06Yes, it’s happening. Replays are here.Game Updates2025-09-02T13:00:00.000ZVALORANT Patch Notes 11.05Light changes as we lead up into Champions Paris.Game Updates2025-08-19T13:00:00.000ZVALORANT Patch Notes 11.04Sage mains rejoice, new map rotation, and some more.Game Updates2025-07-29T13:00:00.000ZVALORANT Patch Notes 11.02VALORANT is upgrading to Unreal 5, plus some bug fixes.Game Updates2025-07-14T14:00:00.000ZVALORANT Patch Notes 11.01We’re skipping this patch to prepare for the Unreal Engine 5 upgrade with
+11.02.

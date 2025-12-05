@@ -4,7 +4,7 @@ this will help us scrape a bunch of testing texts to test the rest of our parsin
 takes in args -- the first n args are the patchnote url to be scraped, and
 the last arg is directory to be saved in. default: public/patch-notes-test/
 
-USAGE: python3 patch_parser.py <your-urls> -o custom/save-path
+USAGE: python3 patch_scraper.py <your-urls> -o custom/save-path
 '''
 
 # referenced bs4 samplecode:
