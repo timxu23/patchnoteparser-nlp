@@ -1,0 +1,21 @@
+we need to note down each version like so:
+VALORANT Patch Notes (*\d.*\d)
+so that the version number is actually a number that can go in order
+
+keywords for each big section:
+GENERAL UPDATES
+observed: mostly pure words, no numbers, so it's hard to track, usually no crutial information so we can ignore
+AGENT UPDATES
+observed: mostly pure words, no numbers, so it's hard to track, but there are crutial information so we need to think of a way to extract and track
+COMPETITIVE UPDATES
+mostly irrelevant, we can ignore this section
+ESPORTS UPDATES
+mostly irrelevant, we can ignore this section
+GAMEPLAY SYSTEM UPDATES
+ignore
+BUG FIXES
+ignore
+CONSOLE ONLY, PC ONLY, etc
+ignore until the next h1
+
+
