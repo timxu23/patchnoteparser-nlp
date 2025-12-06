@@ -144,10 +144,18 @@ def load_annotations(path: Path) -> List[Dict[str, Any]]:
     raise ValueError(f"Unsupported annotation format for {path}")
 
 
-def parse_patch(path: Path) -> List[Dict[str, Any]]:
+def parse_patch(path: Path, use_dev: bool = False) -> List[Dict[str, Any]]:
     """Parse an HTML patch note and return structured changes as dicts."""
-    parser = PatchNoteParser()
     html = path.read_text(encoding="utf-8")
+    if use_dev:
+        try:
+            import patch_parser_dev as dev
+        except ImportError as exc:  # pragma: no cover - defensive
+            raise ImportError("patch_parser_dev is required for --use-dev") from exc
+        df = dev.extract_agent_updates_dataframe(html, patch_version="11.08")
+        return df.to_dict(orient="records")
+
+    parser = PatchNoteParser()
     changes = parser.parse_patch_html(html, fallback_version="11.08")
     df = parser.to_dataframe(changes)
     return df.to_dict(orient="records")
@@ -321,6 +329,11 @@ def main():
         action="store_true",
         help="Skip rows with unknown direction/magnitude so metrics focus on labeled items.",
     )
+    parser.add_argument(
+        "--use-dev",
+        action="store_true",
+        help="Parse HTML with patch_parser_dev.extract_agent_updates_dataframe instead of PatchNoteParser.",
+    )
     args = parser.parse_args()
 
     if not args.data.exists():
@@ -335,7 +348,7 @@ def main():
     if not args.no_html:
         if not args.html.exists():
             raise FileNotFoundError(f"Patch HTML not found at {args.html}")
-        parsed_changes = parse_patch(args.html)
+        parsed_changes = parse_patch(args.html, use_dev=args.use_dev)
         parsed_df = pd.DataFrame(parsed_changes)
         parsed_lookup, parsed_lookup_agent, parsed_lookup_text = build_lookup(parsed_changes)
 

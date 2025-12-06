@@ -16,10 +16,11 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 import pandas as pd
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
 
 # ========================== [Enums / Data Model] ==========================
 
@@ -546,10 +547,7 @@ class PatchNoteParser:
         patch_version = self.extract_patch_version(full_text, fallback=fallback_version)
 
         changes: List[BalanceChange] = []
-        current_section = None
-        current_agent = None
-        line_counter = 0
-        in_agent_updates = False
+        seen_entries = set()
 
         lines_cache = patch_html.splitlines()
 
@@ -559,73 +557,79 @@ class PatchNoteParser:
                     return idx
             return None
 
-        for element in body.find_all(["h1", "h2", "h3", "h4", "p", "li"]):
-            tag_name = element.name
-            text = self.normalize_text(element.get_text(" ", strip=True))
-            if not text:
-                continue
+        # Narrow to AGENT UPDATES section.
+        agent_h3 = soup.find(lambda tag: tag.name in {"h2", "h3"} and "agent updates" in tag.get_text(" ", strip=True).lower())
+        if not agent_h3:
+            return changes
+        nodes_between = []
+        node = agent_h3.next_sibling
+        while node:
+            if getattr(node, "name", None) in {"h2", "h3"} and "agent updates" not in node.get_text(" ", strip=True).lower():
+                break
+            nodes_between.append(node)
+            node = node.next_sibling
+        fragment_html = "".join(str(n) for n in nodes_between)
+        fragment = BeautifulSoup(fragment_html, "html.parser")
 
-            if tag_name in {"h1", "h2", "h3", "h4"}:
-                current_section = text
-                heading_agent = self._heading_agent(text)
-                if heading_agent:
-                    current_agent = heading_agent
-                # Track if we are within AGENT UPDATES only.
-                if "agent updates" in text.lower():
-                    in_agent_updates = True
-                elif tag_name in {"h2", "h3"} and in_agent_updates:
-                    # Exiting agent updates when hitting next major section.
-                    in_agent_updates = False
-                continue
+        def direct_text(li_tag):
+            parts = []
+            for child in li_tag.contents:
+                if isinstance(child, NavigableString):
+                    txt = str(child).strip()
+                    if txt:
+                        parts.append(txt)
+            return " ".join(parts).strip()
 
-            if not in_agent_updates:
-                continue
-
-            if tag_name in {"p", "li"}:
-                line_counter += 1
-                line_num = line_counter
-
-                # Skip container list items; keep only leaf <li> entries.
-                if tag_name == "li" and element.find("li"):
-                    continue
-
-                # Standalone agent bullet (e.g., "Breach" before nested list) sets context.
-                agent_only = self.extract_agent(text)
-                if agent_only and not self._is_relevant_line(text):
-                    current_agent = agent_only
-                    continue
-
-                if not self._is_relevant_line(text):
-                    continue
-
-                agent = self.extract_agent(text) or self._heading_agent(current_section) or current_agent
-                if not agent:
-                    # If we cannot map to an agent, skip to avoid noise
-                    continue
-
-                ability = self.extract_ability(text, agent)
+        def process_change_li(li_tag, agent_name: str, ability_name: str):
+            text = self.normalize_text(direct_text(li_tag))
+            if text and self._is_relevant_line(text):
                 old_val, new_val, unit = self.extract_values(text)
-                if new_val is None:
-                    # No numeric update found; skip per requirements.
-                    continue
-                direction = self.detect_direction(text, old_val=old_val, new_val=new_val, unit=unit)
-                magnitude = self.estimate_magnitude(text, old_val, new_val)
+                if new_val is not None:
+                    direction = self.detect_direction(text, old_val=old_val, new_val=new_val, unit=unit)
+                    magnitude = self.estimate_magnitude(text, old_val, new_val)
+                    html_line_num = find_line_for_text(text)
+                    key = (agent_name, ability_name, text)
+                    if key not in seen_entries:
+                        seen_entries.add(key)
+                        changes.append(
+                            BalanceChange(
+                                patch_version=patch_version,
+                                agent=agent_name,
+                                ability=ability_name,
+                                description=text,
+                                direction=direction,
+                                magnitude=magnitude,
+                                old_value=old_val,
+                                new_value=new_val,
+                                unit=unit,
+                                line_num=html_line_num,
+                            )
+                        )
 
-                html_line_num = find_line_for_text(agent) or line_num
+            child_ul = li_tag.find("ul", recursive=False)
+            if child_ul:
+                for child_li in child_ul.find_all("li", recursive=False):
+                    process_change_li(child_li, agent_name, ability_name)
 
-                change = BalanceChange(
-                    patch_version=patch_version,
-                    agent=agent,
-                    ability=ability,
-                    description=text,
-                    direction=direction,
-                    magnitude=magnitude,
-                    old_value=old_val,
-                    new_value=new_val,
-                    unit=unit,
-                    line_num=html_line_num,
+        for agent_li in fragment.find_all("li"):
+            agent_name = direct_text(agent_li)
+            if agent_name not in self.AGENTS:
+                continue
+
+            ability_ul = agent_li.find("ul", recursive=False)
+            if not ability_ul:
+                continue
+
+            for ability_li in ability_ul.find_all("li", recursive=False):
+                strong = ability_li.find("strong")
+                ability_name = (
+                    self.normalize_text(strong.get_text(" ", strip=True)) if strong else direct_text(ability_li) or "General"
                 )
-                changes.append(change)
+                change_ul = ability_li.find("ul", recursive=False)
+                if not change_ul:
+                    continue
+                for change_li in change_ul.find_all("li", recursive=False):
+                    process_change_li(change_li, agent_name, ability_name)
 
         return changes
 
@@ -640,6 +644,9 @@ class PatchNoteParser:
 
         if df.empty:
             return df
+
+        # Drop rows that have no numeric information at all.
+        df = df[~(df["old_value"].isna() & df["new_value"].isna())]
 
         df["direction"] = df["direction"].apply(lambda x: x.value if hasattr(x, "value") else x)
         df["magnitude"] = df["magnitude"].apply(lambda x: x.value if hasattr(x, "value") else x)
