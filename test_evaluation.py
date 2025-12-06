@@ -2,11 +2,29 @@ import argparse
 import csv
 import json
 import runpy
+import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+import pandas as pd
+
 from patch_parser import PatchNoteParser
 from sklearn.metrics import classification_report
+
+# Simple ANSI colors for readability in CLI output.
+COLOR = {
+    "reset": "\033[0m",
+    "green": "\033[92m",
+    "red": "\033[91m",
+    "yellow": "\033[93m",
+    "cyan": "\033[96m",
+}
+
+
+def colorize(text: str, color: str) -> str:
+    code = COLOR.get(color, "")
+    reset = COLOR["reset"] if code else ""
+    return f"{code}{text}{reset}"
 
 # Default to the new 11.08 Agent Updates annotations.
 DEFAULT_DATA_PATH = Path("data/test_11-08_data.csv")
@@ -239,13 +257,13 @@ def evaluate(
     dir_labels = sorted(set(y_true_dir + y_pred_dir))
     mag_labels = sorted(set(y_true_mag + y_pred_mag))
 
-    print("=== Direction Classification ===")
+    print(colorize("=== Direction Classification ===", "cyan"))
     print(
         classification_report(
             y_true_dir, y_pred_dir, labels=dir_labels, target_names=dir_labels, zero_division=0
         )
     )
-    print("=== Magnitude Estimation ===")
+    print(colorize("=== Magnitude Estimation ===", "cyan"))
     print(
         classification_report(
             y_true_mag, y_pred_mag, labels=mag_labels, target_names=mag_labels, zero_division=0
@@ -253,9 +271,9 @@ def evaluate(
     )
 
     if parsed_lookup is not None:
-        print(f"Matched parsed rows: {len(y_true_dir)} / {len(entries)}")
+        print(colorize(f"Matched parsed rows: {len(y_true_dir)} / {len(entries)}", "green"))
         if missing_from_parsed:
-            print(f"Unmatched annotations (not found in parsed output): {len(missing_from_parsed)}")
+            print(colorize(f"Unmatched annotations (not found in parsed output): {len(missing_from_parsed)}", "yellow"))
             for miss in missing_from_parsed:
                 meta = miss.get("meta", {})
                 print(
@@ -263,7 +281,7 @@ def evaluate(
                 )
 
     if mismatches:
-        print("\n=== Misclassified Examples ===")
+        print(colorize("\n=== Misclassified Examples ===", "cyan"))
         for mismatch in mismatches:
             meta = mismatch.get("meta") or {}
             meta_bits = [f"{k}={v}" for k, v in meta.items() if v not in (None, "", "None")]
@@ -312,11 +330,13 @@ def main():
     parsed_lookup = None
     parsed_lookup_agent = None
     parsed_lookup_text = None
+    parsed_df = None
 
     if not args.no_html:
         if not args.html.exists():
             raise FileNotFoundError(f"Patch HTML not found at {args.html}")
         parsed_changes = parse_patch(args.html)
+        parsed_df = pd.DataFrame(parsed_changes)
         parsed_lookup, parsed_lookup_agent, parsed_lookup_text = build_lookup(parsed_changes)
 
     evaluate(
@@ -326,6 +346,42 @@ def main():
         parsed_lookup_text=parsed_lookup_text,
         skip_unknown=args.skip_unknown,
     )
+
+    if parsed_df is not None:
+        # Count checks vs CSV annotations (agent-level buff/nerf counts, and total rows).
+        anno_df_raw = pd.DataFrame(entries)
+        # Flatten annotation meta so agent/ability are accessible for counting.
+        anno_df = anno_df_raw.copy()
+        if "meta" in anno_df.columns:
+            anno_df["agent"] = anno_df["meta"].apply(lambda m: (m or {}).get("agent"))
+            anno_df["ability"] = anno_df["meta"].apply(lambda m: (m or {}).get("ability"))
+        anno_len = len(anno_df)
+        parsed_len = len(parsed_df)
+        print(colorize("\n=== Count Check ===", "cyan"))
+        print(f"Annotated rows: {anno_len}")
+        print(f"Parsed rows:    {parsed_len}")
+        if anno_len != parsed_len:
+            print(colorize(f"[WARN] Row count mismatch: parsed {parsed_len} vs annotated {anno_len}", "yellow"))
+
+        def dir_counts(df):
+            if "agent" not in df.columns or "direction" not in df.columns:
+                return pd.DataFrame()
+            return df.groupby(["agent", "direction"]).size().unstack(fill_value=0)
+
+        anno_counts = dir_counts(anno_df)
+        parsed_counts = dir_counts(parsed_df)
+        all_agents = sorted(set(anno_counts.index).union(parsed_counts.index))
+        print(colorize("\nAgent buff/nerf counts (parsed vs annotated):", "cyan"))
+        for agent in all_agents:
+            ann_buff = anno_counts.get("buff", pd.Series(dtype=int)).get(agent, 0)
+            ann_nerf = anno_counts.get("nerf", pd.Series(dtype=int)).get(agent, 0)
+            parsed_buff = parsed_counts.get("buff", pd.Series(dtype=int)).get(agent, 0)
+            parsed_nerf = parsed_counts.get("nerf", pd.Series(dtype=int)).get(agent, 0)
+            if parsed_buff == ann_buff and parsed_nerf == ann_nerf:
+                continue
+            print(
+                f"- {agent:12s} parsed buff/nerf: {parsed_buff}/{parsed_nerf} | annotated: {ann_buff}/{ann_nerf}"
+            )
 
 
 if __name__ == "__main__":

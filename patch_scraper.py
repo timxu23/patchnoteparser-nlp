@@ -63,15 +63,13 @@ def run_scraper():
             html = urlopen(url).read()
         except Exception as e:
             print(f"[SCRAPER] ERROR opening URL {url}: {e}")
-            continue # skip to the next URL
+            continue
         soup = BeautifulSoup(html, features="html.parser")
 
         for script in soup(["script", "style"]):
             script.extract()
-        # Preserve structural and emphasis tags instead of flattening to plain text.
         content_root = soup.body or soup
         html_output = content_root.prettify()
-        # Also save the exact markup to a .txt mirror for downstream parsing convenience.
         text_output = html_output
 
         # ------------ file saving -------------

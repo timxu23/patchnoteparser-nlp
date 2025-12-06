@@ -1,3 +1,7 @@
+# ************************************************************************
+# NOTE: THIS PARSER WAS BUILT AS A SIDE TEST AND IS NO LONGER IN USE
+# ************************************************************************
+
 from bs4 import BeautifulSoup, NavigableString
 import pandas as pd
 import re
@@ -90,7 +94,7 @@ def parse_numeric_change(description):
 
 def compute_magnitude(old, new):
     """
-    Your rule:
+    Rule:
       - <=10%  -> minor
       - <=30%  -> moderate
       - >30%   -> significant

@@ -1,11 +1,14 @@
 """
-Patch note parser for Valorant balance updates.
+Patch note parser for Valorant balance updates
+
+usage: (start venv and install all dependencies via requirements.txt)
+python3 patch_parser.py
 
 Goals:
-- Parse scraped HTML patch notes (from patch_scraper) and extract structured balance changes.
-- Focus on Agent balance updates; skip irrelevant sections (general updates, bug fixes, competitive, esports, gameplay systems, console-only).
-- Capture both structured values (old/new/unit) and qualitative direction/magnitude using regex + keyword heuristics.
-- Output a DataFrame that can be used for accuracy/precision/recall/F1 evaluation and for visualizing trends across patch versions.
+- Parse scraped HTML patch notes (from patch_scraper) and extract structured balance changes
+- Focus on Agent balance updates; skip irrelevant sections (general updates, bug fixes, competitive, esports, gameplay systems, console-only)
+- Capture both structured values (old/new/unit) and qualitative direction/magnitude using regex + keyword heuristics
+- Output a DataFrame that can be used for accuracy/precision/recall/F1 evaluation and for visualizing trends across patch versions
 """
 
 import re
@@ -300,20 +303,20 @@ class PatchNoteParser:
     ]
 
     def __init__(self):
-        # Pattern to match numerical changes: "X >>> Y", "X -> Y", "X to Y", etc.
-        # Allow units or symbols between the number and arrow (e.g., "40s → 60s", "15% → 10%").
+        # numerical changes: "X >>> Y", "X -> Y", "X to Y", etc
+        # NOTE FOR units or symbols between the number and arrow (e.g., "40s → 60s", "15% → 10%").
         self.number_pattern = re.compile(
             r"(\d+\.?\d*)\s*[a-z%]*\s*(?:>>>|->|→| to | from )\s*(\d+\.?\d*)",
             re.IGNORECASE,
         )
 
-        # Pattern to match modifiers (seconds, damage, etc.)
+        # modifiers (seconds, damage, etc.)
         self.unit_pattern = re.compile(
             r"\b(seconds?|sec|damage|hp|health|armor|cost|credits?|cooldown|duration|range|radius|ms|m|percent|point|points?)\b",
             re.IGNORECASE,
         )
 
-        # Patch version pattern: VALORANT Patch Notes 11.09 -> 11.09
+        # VALORANT Patch Notes 11.09 -> 11.09
         self.version_pattern = re.compile(
             r"patch\s+notes\s+(\d+\.\d+)", re.IGNORECASE
         )
@@ -348,7 +351,7 @@ class PatchNoteParser:
                 return self.ABILITY_KEYWORDS[key]
 
         ability_patterns = [
-            r"\*\*([^*]+)\*\*",  # Markdown-style bold
+            r"\*\*([^*]+)\*\*",  # Markdown bold, no longer in use but kept
             r"<strong>([^<]+)</strong>",  # HTML bold
             r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b",
         ]
@@ -501,26 +504,17 @@ class PatchNoteParser:
     def estimate_magnitude(
         self, text: str, old_val: Optional[float] = None, new_val: Optional[float] = None
     ) -> Magnitude:
-        """Estimate the magnitude of change."""
-        if old_val is None or new_val is None:
+        """Estimate the magnitude of change using percent deltas only."""
+        if old_val is None or new_val is None or old_val == 0:
             return Magnitude.UNKNOWN
-        text_lower = text.lower()
 
-        if any(word in text_lower for word in ["slightly", "minor", "small", "marginal"]):
+        percent_change = abs((new_val - old_val) / old_val) * 100
+
+        if percent_change <= 10:
             return Magnitude.MINOR
-        if any(word in text_lower for word in ["significantly", "major", "large", "dramatically", "huge"]):
-            return Magnitude.SIGNIFICANT
-
-        if old_val is not None and new_val is not None and old_val != 0:
-            percent_change = abs((new_val - old_val) / old_val) * 100
-
-            if percent_change <= 10:
-                return Magnitude.MINOR
-            if percent_change <= 30:
-                return Magnitude.MODERATE
-            return Magnitude.SIGNIFICANT
-
-        return Magnitude.MODERATE
+        if percent_change <= 30:
+            return Magnitude.MODERATE
+        return Magnitude.SIGNIFICANT
 
     # -------------------------- [Parsing Helpers] --------------------------
 
@@ -590,6 +584,10 @@ class PatchNoteParser:
             if tag_name in {"p", "li"}:
                 line_counter += 1
                 line_num = line_counter
+
+                # Skip container list items; keep only leaf <li> entries.
+                if tag_name == "li" and element.find("li"):
+                    continue
 
                 # Standalone agent bullet (e.g., "Breach" before nested list) sets context.
                 agent_only = self.extract_agent(text)
