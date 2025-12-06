@@ -25,12 +25,14 @@ class ChangeDirection(Enum):
     BUFF = "buff"
     NERF = "nerf"
     NEUTRAL = "neutral"
+    UNKNOWN = "unknown"
 
 
 class Magnitude(Enum):
     MINOR = "minor"
     MODERATE = "moderate"
     SIGNIFICANT = "significant"
+    UNKNOWN = "unknown"
 
 
 @dataclass
@@ -307,7 +309,7 @@ class PatchNoteParser:
 
         # Pattern to match modifiers (seconds, damage, etc.)
         self.unit_pattern = re.compile(
-            r"\b(seconds?|sec|damage|hp|health|armor|cost|credits?|cooldown|duration|range|radius|ms|m)\b",
+            r"\b(seconds?|sec|damage|hp|health|armor|cost|credits?|cooldown|duration|range|radius|ms|m|percent|point|points?)\b",
             re.IGNORECASE,
         )
 
@@ -376,6 +378,14 @@ class PatchNoteParser:
                 new_val = float(num_match.group(2))
             except ValueError:
                 pass
+        else:
+            # Single number case: treat as new value only.
+            single_match = re.search(r"(\d+\.?\d*)", text)
+            if single_match:
+                try:
+                    new_val = float(single_match.group(1))
+                except ValueError:
+                    pass
 
         unit_match = self.unit_pattern.search(text)
         if unit_match:
@@ -385,9 +395,16 @@ class PatchNoteParser:
 
     # -------------------------- [Direction/Magnitude] --------------------------
 
-    def detect_direction(self, text: str) -> ChangeDirection:
+    def detect_direction(
+        self, text: str, old_val: Optional[float] = None, new_val: Optional[float] = None, unit: Optional[str] = None
+    ) -> ChangeDirection:
         """Detect if change is a buff, nerf, or neutral using keywords and numerical context."""
         text_lower = text.lower()
+
+        if old_val is None or new_val is None:
+            old_val, new_val, unit = self.extract_values(text)
+        if old_val is None or new_val is None:
+            return ChangeDirection.UNKNOWN
 
         buff_count = sum(1 for keyword in self.BUFF_KEYWORDS if keyword in text_lower)
         nerf_count = sum(1 for keyword in self.NERF_KEYWORDS if keyword in text_lower)
@@ -407,12 +424,18 @@ class PatchNoteParser:
             "activation delay",
             "delay",
             "recharge time",
+            "battery recharge",
+            "time to recharge",
             "reload time",
+            "reactivation time",
             "cast time",
-            "ms",
             "ultimate points",
             "ultimate point",
             "price",
+            "nearsight",
+            "decay",
+            "windup",
+            "initial windup",
         ]
         # Attributes where an increase is usually positive
         positive_attributes = [
@@ -423,16 +446,26 @@ class PatchNoteParser:
             "hp",
             "armor",
             "speed",
+            "movement speed",
+            "sprint time",
             "radius",
+            "width",
             "size",
             "amount",
             "count",
             "shield",
             "window",
             "m",
+            "flash",
+            "concuss",
+            "hindered",
+            "marked",
+            "deafen",
+            "weapon draw speed",
+            "weapon recovery speed",
+            "fire rate",
+            "firing rate",
         ]
-
-        old_val, new_val, _ = self.extract_values(text)
 
         if old_val is not None and new_val is not None and old_val != new_val:
             is_increase = new_val > old_val
@@ -469,6 +502,8 @@ class PatchNoteParser:
         self, text: str, old_val: Optional[float] = None, new_val: Optional[float] = None
     ) -> Magnitude:
         """Estimate the magnitude of change."""
+        if old_val is None or new_val is None:
+            return Magnitude.UNKNOWN
         text_lower = text.lower()
 
         if any(word in text_lower for word in ["slightly", "minor", "small", "marginal"]):
@@ -498,12 +533,7 @@ class PatchNoteParser:
     def _is_relevant_line(self, text: str) -> bool:
         """Heuristic: keep lines that contain numbers or direction keywords."""
         has_number = bool(re.search(r"\d", text))
-        text_lower = text.lower()
-        has_keyword = any(
-            kw in text_lower
-            for kw in (self.BUFF_KEYWORDS + self.NERF_KEYWORDS + self.NEUTRAL_KEYWORDS)
-        )
-        return has_number or has_keyword
+        return has_number
 
     def _heading_agent(self, heading_text: str) -> Optional[str]:
         """Try to derive agent from heading text."""
@@ -525,6 +555,15 @@ class PatchNoteParser:
         current_section = None
         current_agent = None
         line_counter = 0
+        in_agent_updates = False
+
+        lines_cache = patch_html.splitlines()
+
+        def find_line_for_text(marker: str) -> Optional[int]:
+            for idx, line in enumerate(lines_cache, start=1):
+                if marker and marker in line:
+                    return idx
+            return None
 
         for element in body.find_all(["h1", "h2", "h3", "h4", "p", "li"]):
             tag_name = element.name
@@ -537,9 +576,15 @@ class PatchNoteParser:
                 heading_agent = self._heading_agent(text)
                 if heading_agent:
                     current_agent = heading_agent
+                # Track if we are within AGENT UPDATES only.
+                if "agent updates" in text.lower():
+                    in_agent_updates = True
+                elif tag_name in {"h2", "h3"} and in_agent_updates:
+                    # Exiting agent updates when hitting next major section.
+                    in_agent_updates = False
                 continue
 
-            if self._section_is_skipped(current_section):
+            if not in_agent_updates:
                 continue
 
             if tag_name in {"p", "li"}:
@@ -562,8 +607,13 @@ class PatchNoteParser:
 
                 ability = self.extract_ability(text, agent)
                 old_val, new_val, unit = self.extract_values(text)
-                direction = self.detect_direction(text)
+                if new_val is None:
+                    # No numeric update found; skip per requirements.
+                    continue
+                direction = self.detect_direction(text, old_val=old_val, new_val=new_val, unit=unit)
                 magnitude = self.estimate_magnitude(text, old_val, new_val)
+
+                html_line_num = find_line_for_text(agent) or line_num
 
                 change = BalanceChange(
                     patch_version=patch_version,
@@ -575,7 +625,7 @@ class PatchNoteParser:
                     old_value=old_val,
                     new_value=new_val,
                     unit=unit,
-                    line_num=line_num,
+                    line_num=html_line_num,
                 )
                 changes.append(change)
 
@@ -593,8 +643,8 @@ class PatchNoteParser:
         if df.empty:
             return df
 
-        df["direction"] = df["direction"].apply(lambda x: x.value)
-        df["magnitude"] = df["magnitude"].apply(lambda x: x.value)
+        df["direction"] = df["direction"].apply(lambda x: x.value if hasattr(x, "value") else x)
+        df["magnitude"] = df["magnitude"].apply(lambda x: x.value if hasattr(x, "value") else x)
         if "line_num" in df.columns:
             df = df.rename(columns={"line_num": "lineNum"})
 
