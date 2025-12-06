@@ -1,21 +1,24 @@
-we need to note down each version like so:
-VALORANT Patch Notes (*\d.*\d)
-so that the version number is actually a number that can go in order
+Version detection:
+- Look for "VALORANT Patch Notes <number>" to extract patch version (e.g., 11.09). Regex: patch notes (\d+\.\d+)
 
-keywords for each big section:
-GENERAL UPDATES
-observed: mostly pure words, no numbers, so it's hard to track, usually no crutial information so we can ignore
-AGENT UPDATES
-observed: mostly pure words, no numbers, so it's hard to track, but there are crutial information so we need to think of a way to extract and track
-COMPETITIVE UPDATES
-mostly irrelevant, we can ignore this section
-ESPORTS UPDATES
-mostly irrelevant, we can ignore this section
-GAMEPLAY SYSTEM UPDATES
-ignore
-BUG FIXES
-ignore
-CONSOLE ONLY, PC ONLY, etc
-ignore until the next h1
+Sections to skip entirely:
+- GENERAL UPDATES / GENERAL
+- COMPETITIVE UPDATES
+- ESPORTS UPDATES
+- GAMEPLAY SYSTEMS UPDATES
+- BUG FIXES
+- CONSOLE ONLY / PC ONLY / platform-only sections
 
+Sections to keep:
+- AGENT UPDATES / AGENTS
+- Specific agent headings (e.g., RAZE, JETT, Viper, etc.) and their bullets/sub-bullets
+
+Relevance filters for lines:
+- Keep bullets/paragraphs that have numbers OR buff/nerf keywords (increase/decrease/reduced/increased/added/removed/adjusted, etc.).
+- Ignore pure flavor text without numbers/keywords.
+
+Parsing hints:
+- Agent context can come from the current heading or from the text itself.
+- Ability names often appear in bold/strong inside bullets.
+- Use old/new patterns like "X >>> Y", "X -> Y", "from X to Y" to capture numeric deltas and units (sec, damage, cost, cooldown, etc.).
 

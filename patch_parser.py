@@ -1,22 +1,25 @@
 """
-Prototype: Summarization of Valorant Patch Notes
+Patch note parser for Valorant balance updates.
 
-This version integrates Pandas DataFrames for structured historical tracking and summary.
-
-Improvements:
-- Added 'patch_version' to BalanceChange dataclass.
-- Added method to convert changes into a Pandas DataFrame.
-- Updated main() to use DataFrame for categorization and summary statistics.
+Goals:
+- Parse scraped HTML patch notes (from patch_scraper) and extract structured balance changes.
+- Focus on Agent balance updates; skip irrelevant sections (general updates, bug fixes, competitive, esports, gameplay systems, console-only).
+- Capture both structured values (old/new/unit) and qualitative direction/magnitude using regex + keyword heuristics.
+- Output a DataFrame that can be used for accuracy/precision/recall/F1 evaluation and for visualizing trends across patch versions.
 """
 
 import re
-import pandas as pd
-from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
-import sys
+from typing import Dict, List, Optional, Tuple
+import pandas as pd
+from bs4 import BeautifulSoup
 
-                    # ========== [Heuristics] ===========
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+
+# ========================== [Enums / Data Model] ==========================
+
 
 class ChangeDirection(Enum):
     BUFF = "buff"
@@ -33,8 +36,8 @@ class Magnitude(Enum):
 @dataclass
 class BalanceChange:
     """Represents a single balance change extracted from patch notes."""
-    # added patch_version for historical tracking
-    patch_version: str 
+
+    patch_version: str
     agent: str
     ability: Optional[str]
     description: str
@@ -43,48 +46,289 @@ class BalanceChange:
     old_value: Optional[float] = None
     new_value: Optional[float] = None
     unit: Optional[str] = None
+    line_num: Optional[int] = None
+
+
+# ========================== [Parser] ==========================
 
 
 class PatchNoteParser:
     """Parser for extracting structured information from Valorant patch notes."""
-    
+
     # Common Valorant agents
     AGENTS = [
-        "Raze", "Jett", "Phoenix", "Sage", "Sova", "Brimstone", "Viper",
-        "Cypher", "Reyna", "Killjoy", "Breach", "Omen", "Skye", "Yoru",
-        "Astra", "KAY/O", "Chamber", "Neon", "Fade", "Harbor", "Gekko",
-        "Deadlock", "Iso", "Clove", "Waylay"
+        "Raze",
+        "Jett",
+        "Phoenix",
+        "Sage",
+        "Sova",
+        "Brimstone",
+        "Viper",
+        "Cypher",
+        "Reyna",
+        "Killjoy",
+        "Breach",
+        "Omen",
+        "Skye",
+        "Yoru",
+        "Astra",
+        "KAY/O",
+        "Chamber",
+        "Neon",
+        "Fade",
+        "Harbor",
+        "Gekko",
+        "Deadlock",
+        "Iso",
+        "Clove",
+        "Waylay",
+        "Vyse",
+        "Veto",
     ]
-    
-    # Keywords that indicate direction
+
+    ABILITY_KEYWORDS: Dict[str, str] = {
+        # Raze
+        "boom bot": "Boom Bot",
+        "blast pack": "Blast Pack",
+        "paint shells": "Paint Shells",
+        "showstopper": "Showstopper",
+        # Jett
+        "cloudburst": "Cloudburst",
+        "updraft": "Updraft",
+        "tailwind": "Tailwind",
+        "blade storm": "Blade Storm",
+        # Phoenix
+        "curveball": "Curveball",
+        "blaze": "Blaze",
+        "hot hands": "Hot Hands",
+        "run it back": "Run It Back",
+        # Sage
+        "barrier orb": "Barrier Orb",
+        "slow orb": "Slow Orb",
+        "healing orb": "Healing Orb",
+        "resurrection": "Resurrection",
+        # Sova
+        "shock bolt": "Shock Bolt",
+        "owl drone": "Owl Drone",
+        "recon bolt": "Recon Bolt",
+        "hunter's fury": "Hunter's Fury",
+        # Brimstone
+        "incendiary": "Incendiary",
+        "sky smoke": "Sky Smoke",
+        "stim beacon": "Stim Beacon",
+        "orbital strike": "Orbital Strike",
+        # Viper
+        "snake bite": "Snake Bite",
+        "poison cloud": "Poison Cloud",
+        "toxic screen": "Toxic Screen",
+        "viper's pit": "Viper's Pit",
+        # Cypher
+        "trapwire": "Trapwire",
+        "cyber cage": "Cyber Cage",
+        "spycam": "Spycam",
+        "neural theft": "Neural Theft",
+        # Reyna
+        "leer": "Leer",
+        "dismiss": "Dismiss",
+        "devour": "Devour",
+        "empress": "Empress",
+        # Killjoy
+        "alarmbot": "Alarmbot",
+        "nanoswarm": "Nanoswarm",
+        "turret": "Turret",
+        "lockdown": "Lockdown",
+        # Breach
+        "aftershock": "Aftershock",
+        "flashpoint": "Flashpoint",
+        "fault line": "Fault Line",
+        "rolling thunder": "Rolling Thunder",
+        # Omen
+        "paranoia": "Paranoia",
+        "dark cover": "Dark Cover",
+        "shrouded step": "Shrouded Step",
+        "from the shadows": "From the Shadows",
+        # Skye
+        "guiding light": "Guiding Light",
+        "trailblazer": "Trailblazer",
+        "regrowth": "Regrowth",
+        "seekers": "Seekers",
+        # Yoru
+        "fakeout": "Fakeout",
+        "blindside": "Blindside",
+        "gatecrash": "Gatecrash",
+        "dimensional drift": "Dimensional Drift",
+        # Astra
+        "gravity well": "Gravity Well",
+        "nova pulse": "Nova Pulse",
+        "nebula": "Nebula",
+        "astral form": "Astral Form",
+        "cosmic divide": "Cosmic Divide",
+        # KAY/O
+        "frag/ment": "FRAG/ment",
+        "fragment": "FRAG/ment",
+        "zero/point": "ZERO/point",
+        "zero point": "ZERO/point",
+        "flash/drive": "FLASH/drive",
+        "flash drive": "FLASH/drive",
+        "null/cmd": "NULL/cmd",
+        "null cmd": "NULL/cmd",
+        # Chamber
+        "rendezvous": "Rendezvous",
+        "headhunter": "Headhunter",
+        "trademark": "Trademark",
+        "tour de force": "Tour De Force",
+        # Neon
+        "fast lane": "Fast Lane",
+        "relay bolt": "Relay Bolt",
+        "high gear": "High Gear",
+        "overdrive": "Overdrive",
+        # Fade
+        "prowler": "Prowler",
+        "seize": "Seize",
+        "haunt": "Haunt",
+        "nightfall": "Nightfall",
+        # Harbor
+        "cascade": "Cascade",
+        "cove": "Cove",
+        "high tide": "High Tide",
+        "reckoning": "Reckoning",
+        # Gekko
+        "dizzy": "Dizzy",
+        "wingman": "Wingman",
+        "mosh pit": "Mosh Pit",
+        "thrash": "Thrash",
+        # Deadlock
+        "gravnet": "GravNet",
+        "sonic sensor": "Sonic Sensor",
+        "barrier mesh": "Barrier Mesh",
+        "annihilation": "Annihilation",
+        # Iso
+        "double tap": "Double Tap",
+        "undercut": "Undercut",
+        "contingency": "Contingency",
+        "kill contract": "Kill Contract",
+        # Clove
+        "pick-me-up": "Pick-Me-Up",
+        "pick me up": "Pick-Me-Up",
+        "meddle": "Meddle",
+        "ruse": "Ruse",
+        "not dead yet": "Not Dead Yet",
+    }
+
+    # Sections we should ignore entirely
+    SKIP_SECTIONS = [
+        "general updates",
+        "general",
+        "competitive updates",
+        "esports updates",
+        "gameplay systems",
+        "bug fixes",
+        "console only",
+        "pc only",
+    ]
+
+    # Direction keywords
     BUFF_KEYWORDS = [
-        "increased", "increases", "increase", "improved", "improves", "improve",
-        "enhanced", "enhances", "enhance", "boosted", "boosts", "boost",
-        "faster", "more", "higher", "longer", "greater", "added", "adds"
+        "increased",
+        "increases",
+        "increase",
+        "improved",
+        "improves",
+        "improve",
+        "enhanced",
+        "enhances",
+        "enhance",
+        "boosted",
+        "boosts",
+        "boost",
+        "faster",
+        "more",
+        "higher",
+        "longer",
+        "greater",
+        "added",
+        "adds",
+        "extended",
+        "reduce cost",
+        "cheaper",
     ]
-    
+
     NERF_KEYWORDS = [
-        "decreased", "decreases", "decrease", "reduced", "reduces", "reduce",
-        "lowered", "lowers", "lower", "weakened", "weakens", "weaken",
-        "slower", "less", "shorter", "removed", "removes", "removal"
+        "decreased",
+        "decreases",
+        "decrease",
+        "reduced",
+        "reduces",
+        "reduce",
+        "lowered",
+        "lowers",
+        "lower",
+        "weakened",
+        "weakens",
+        "weaken",
+        "slower",
+        "less",
+        "shorter",
+        "removed",
+        "removes",
+        "removal",
+        "increased cost",
+        "more expensive",
+        "longer cooldown",
     ]
-    
+
     NEUTRAL_KEYWORDS = [
-        "adjusted", "adjusts", "adjust", "changed", "changes", "change",
-        "updated", "updates", "update", "fixed", "fixes", "fix",
-        "standardized", "standardizes", "standardize", "normalized"
+        "adjusted",
+        "adjusts",
+        "adjust",
+        "changed",
+        "changes",
+        "change",
+        "updated",
+        "updates",
+        "update",
+        "fixed",
+        "fixes",
+        "fix",
+        "standardized",
+        "standardizes",
+        "standardize",
+        "normalized",
+        "tuned",
+        "cleaned up",
     ]
-    
+
     def __init__(self):
         # Pattern to match numerical changes: "X >>> Y", "X -> Y", "X to Y", etc.
         self.number_pattern = re.compile(
-            r'(\d+\.?\d*)\s*(?:>>>|->|→|to|from\s+\d+\.?\d*\s+to)\s*(\d+\.?\d*)',
-            re.IGNORECASE
+            r"(\d+\.?\d*)\s*(?:>>>|->|→| to | from )\s*(\d+\.?\d*)", re.IGNORECASE
         )
-        
-        # Pattern to match units (seconds, damage, etc.)
-        self.unit_pattern = re.compile(r'\b(seconds?|sec|damage|hp|health|armor|cost|cooldown|duration|range|radius|ms|m)\b', re.IGNORECASE)
-    
+
+        # Pattern to match modifiers (seconds, damage, etc.)
+        self.unit_pattern = re.compile(
+            r"\b(seconds?|sec|damage|hp|health|armor|cost|credits?|cooldown|duration|range|radius|ms|m)\b",
+            re.IGNORECASE,
+        )
+
+        # Patch version pattern: VALORANT Patch Notes 11.09 -> 11.09
+        self.version_pattern = re.compile(
+            r"patch\s+notes\s+(\d+\.\d+)", re.IGNORECASE
+        )
+
+        # Regex to find section labels in headings
+        self.section_normalizer = re.compile(r"\s+")
+
+    # -------------------------- [Extractors] --------------------------
+
+    def extract_patch_version(self, text: str, fallback: str = "unknown") -> str:
+        match = self.version_pattern.search(text)
+        if match:
+            return match.group(1)
+        return fallback
+
+    def normalize_text(self, text: str) -> str:
+        return self.section_normalizer.sub(" ", text).strip()
+
     def extract_agent(self, text: str) -> Optional[str]:
         """Extract agent name from text."""
         text_upper = text.upper()
@@ -92,283 +336,302 @@ class PatchNoteParser:
             if agent.upper() in text_upper:
                 return agent
         return None
-    
-    def extract_ability(self, text: str, agent: str) -> Optional[str]:
-        """Extract ability name from text (usually in bold or after agent name)."""
+
+    def extract_ability(self, text: str, agent: Optional[str]) -> Optional[str]:
+        """Extract ability name from text using bold markers or title casing."""
+        text_lower = text.lower()
+        for key in sorted(self.ABILITY_KEYWORDS, key=len, reverse=True):
+            if re.search(rf"\b{re.escape(key)}\b", text_lower):
+                return self.ABILITY_KEYWORDS[key]
+
         ability_patterns = [
-            r'\*\*([^*]+)\*\*',  # Bold text
-            r'^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)',  # Title case words
+            r"\*\*([^*]+)\*\*",  # Markdown-style bold
+            r"<strong>([^<]+)</strong>",  # HTML bold
+            r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b",
         ]
-        
+
         for pattern in ability_patterns:
             matches = re.findall(pattern, text)
             for match in matches:
-                if match and match != agent and len(match) > 2:
-                    if match.lower() not in ['agent', 'ability', 'weapon', 'update', 'patch']:
-                        return match.strip()
+                cleaned = match.strip()
+                if not cleaned or cleaned == cleaned.upper():
+                    # skip all-caps headings likely to be agents/sections
+                    continue
+                if agent and cleaned.lower() == agent.lower():
+                    continue
+                if cleaned.lower() in ["agent", "ability", "update", "weapon", "patch"]:
+                    continue
+                return cleaned
         return None
-    
-    def detect_direction(self, text: str) -> ChangeDirection:
-        """Detect if change is a buff, nerf, or neutral using keywords and numerical context."""
-        text_lower = text.lower()
-        
-        buff_count = sum(1 for keyword in self.BUFF_KEYWORDS if keyword in text_lower)
-        nerf_count = sum(1 for keyword in self.NERF_KEYWORDS if keyword in text_lower)
-        neutral_count = sum(1 for keyword in self.NEUTRAL_KEYWORDS if keyword in text_lower)
-        
-        # Things where higher = worse (nerf if increased): costs, delays, cooldowns
-        negative_attributes = ['cooldown', 'cost', 'equip time', 'activation delay',
-                               'delay', 'recharge time', 'reload time', 'cast time',
-                               'ms', 'ultimate points', 'ultimate point']
-        # Things where higher = better (buff if increased): damage, duration, range, health
-        positive_attributes = ['damage', 'duration', 'range', 'health', 'hp', 'armor', 'speed', 
-                             'radius', 'size', 'amount', 'count', 'shield', 'window', 'm']
 
-        # Prioritize numerical change + context over keywords
-        old_val, new_val, _ = self.extract_values(text)
-        
-        if old_val is not None and new_val is not None and old_val != new_val:
-            is_increase = new_val > old_val
-            is_decrease = new_val < old_val
-            
-            has_negative_attr = any(word in text_lower for word in negative_attributes)
-            has_positive_attr = any(word in text_lower for word in positive_attributes)
-
-            # Weight numerical changes heavily based on context
-            if has_negative_attr:
-                if is_increase: nerf_count += 5  # Cost increase = Nerf
-                if is_decrease: buff_count += 5  # Cooldown decrease = Buff
-            elif has_positive_attr:
-                if is_increase: buff_count += 5  # Damage increase = Buff
-                if is_decrease: nerf_count += 5  # Health decrease = Nerf
-            else:
-                # Fallback to general numerical direction if context is unknown
-                if is_increase: buff_count += 1
-                if is_decrease: nerf_count += 1
-
-        # Determine final direction
-        if buff_count > nerf_count and buff_count > 0:
-            return ChangeDirection.BUFF
-        elif nerf_count > buff_count and nerf_count > 0:
-            return ChangeDirection.NERF
-        else:
-            return ChangeDirection.NEUTRAL
-    
-    def estimate_magnitude(self, text: str, old_val: Optional[float] = None, 
-                          new_val: Optional[float] = None) -> Magnitude:
-        """Estimate the magnitude of change."""
-        text_lower = text.lower()
-        
-        # Check for magnitude keywords
-        if any(word in text_lower for word in ['slightly', 'minor', 'small', 'marginal']):
-            return Magnitude.MINOR
-        if any(word in text_lower for word in ['significantly', 'major', 'large', 'dramatically', 'huge']):
-            return Magnitude.SIGNIFICANT
-        
-        # Calculate percentage change if we have values
-        if old_val is not None and new_val is not None and old_val != 0:
-            percent_change = abs((new_val - old_val) / old_val) * 100
-            
-            if percent_change < 10:
-                return Magnitude.MINOR
-            elif percent_change < 30:
-                return Magnitude.MODERATE
-            else:
-                return Magnitude.SIGNIFICANT
-        
-        # Default to moderate if we can't determine
-        return Magnitude.MODERATE
-    
     def extract_values(self, text: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
         """Extract old and new values from text."""
         old_val, new_val, unit = None, None, None
-        
-        # Try to match numerical pattern
+
         num_match = self.number_pattern.search(text)
         if num_match:
             try:
                 old_val = float(num_match.group(1))
                 new_val = float(num_match.group(2))
             except ValueError:
-                pass # Catch cases where conversion to float fails
-        
-        # Extract unit
+                pass
+
         unit_match = self.unit_pattern.search(text)
         if unit_match:
             unit = unit_match.group(1).lower()
-        
+
         return old_val, new_val, unit
-    
-    def parse_patch_note(self, patch_version: str, patch_text: str) -> List[BalanceChange]:
-        """Parse patch notes and extract all balance changes."""
-        changes = []
-        
-        current_agent = None
-        current_ability = None
-        
-        lines = patch_text.split('\n')
-        
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-            
-            # --- Context Tracking (Agent/Ability) ---
-            
-            # Check for agent name (bold or standalone)
-            agent_match = re.search(r'\*\*([A-Z][A-Z\s]+)\*\*', line)
-            if agent_match:
-                potential_agent = agent_match.group(1).strip()
-                for agent in self.AGENTS:
-                    if agent.upper() == potential_agent.upper():
-                        current_agent = agent
-                        current_ability = None
-                        continue
 
-            # Check for agent name without bold
-            agent = self.extract_agent(line)
-            if agent and len(line) < 20:
-                current_agent = agent
-                current_ability = None
-                continue
-            
-            if not current_agent:
-                continue
-            
-            # Check for ability name
-            ability_match = re.search(r'\*\*([^*]+)\*\*', line)
-            if ability_match:
-                potential_ability = ability_match.group(1).strip()
-                if potential_ability.upper() != current_agent.upper():
-                    current_ability = potential_ability
-                    continue
-            
-            # --- Change Extraction ---
+    # -------------------------- [Direction/Magnitude] --------------------------
 
-            # Clean bullet points/formatting
-            if line.startswith('-') or line.startswith('•'):
-                change_text = line[1:].strip()
-            elif re.match(r'^[-•]\s+', line):
-                change_text = re.sub(r'^[-•]\s+', '', line).strip()
+    def detect_direction(self, text: str) -> ChangeDirection:
+        """Detect if change is a buff, nerf, or neutral using keywords and numerical context."""
+        text_lower = text.lower()
+
+        buff_count = sum(1 for keyword in self.BUFF_KEYWORDS if keyword in text_lower)
+        nerf_count = sum(1 for keyword in self.NERF_KEYWORDS if keyword in text_lower)
+        neutral_count = sum(1 for keyword in self.NEUTRAL_KEYWORDS if keyword in text_lower)
+
+        # Attributes where an increase is usually negative
+        negative_attributes = [
+            "cooldown",
+            "cost",
+            "equip time",
+            "activation delay",
+            "delay",
+            "recharge time",
+            "reload time",
+            "cast time",
+            "ms",
+            "ultimate points",
+            "ultimate point",
+            "price",
+        ]
+        # Attributes where an increase is usually positive
+        positive_attributes = [
+            "damage",
+            "duration",
+            "range",
+            "health",
+            "hp",
+            "armor",
+            "speed",
+            "radius",
+            "size",
+            "amount",
+            "count",
+            "shield",
+            "window",
+            "m",
+        ]
+
+        old_val, new_val, _ = self.extract_values(text)
+
+        if old_val is not None and new_val is not None and old_val != new_val:
+            is_increase = new_val > old_val
+            is_decrease = new_val < old_val
+
+            has_negative_attr = any(word in text_lower for word in negative_attributes)
+            has_positive_attr = any(word in text_lower for word in positive_attributes)
+
+            if has_negative_attr:
+                if is_increase:
+                    nerf_count += 5
+                if is_decrease:
+                    buff_count += 5
+            elif has_positive_attr:
+                if is_increase:
+                    buff_count += 5
+                if is_decrease:
+                    nerf_count += 5
             else:
-                change_text = line
-            
-            if len(change_text) < 5 or change_text.upper() in [a.upper() for a in self.AGENTS]:
+                if is_increase:
+                    buff_count += 1
+                if is_decrease:
+                    nerf_count += 1
+
+        if buff_count > nerf_count and buff_count > 0:
+            return ChangeDirection.BUFF
+        if nerf_count > buff_count and nerf_count > 0:
+            return ChangeDirection.NERF
+        if neutral_count > 0:
+            return ChangeDirection.NEUTRAL
+        return ChangeDirection.NEUTRAL
+
+    def estimate_magnitude(
+        self, text: str, old_val: Optional[float] = None, new_val: Optional[float] = None
+    ) -> Magnitude:
+        """Estimate the magnitude of change."""
+        text_lower = text.lower()
+
+        if any(word in text_lower for word in ["slightly", "minor", "small", "marginal"]):
+            return Magnitude.MINOR
+        if any(word in text_lower for word in ["significantly", "major", "large", "dramatically", "huge"]):
+            return Magnitude.SIGNIFICANT
+
+        if old_val is not None and new_val is not None and old_val != 0:
+            percent_change = abs((new_val - old_val) / old_val) * 100
+
+            if percent_change <= 10:
+                return Magnitude.MINOR
+            if percent_change <= 30:
+                return Magnitude.MODERATE
+            return Magnitude.SIGNIFICANT
+
+        return Magnitude.MODERATE
+
+    # -------------------------- [Parsing Helpers] --------------------------
+
+    def _section_is_skipped(self, section_name: Optional[str]) -> bool:
+        if not section_name:
+            return False
+        section_lower = section_name.lower()
+        return any(skip in section_lower for skip in self.SKIP_SECTIONS)
+
+    def _is_relevant_line(self, text: str) -> bool:
+        """Heuristic: keep lines that contain numbers or direction keywords."""
+        has_number = bool(re.search(r"\d", text))
+        text_lower = text.lower()
+        has_keyword = any(
+            kw in text_lower
+            for kw in (self.BUFF_KEYWORDS + self.NERF_KEYWORDS + self.NEUTRAL_KEYWORDS)
+        )
+        return has_number or has_keyword
+
+    def _heading_agent(self, heading_text: str) -> Optional[str]:
+        """Try to derive agent from heading text."""
+        return self.extract_agent(heading_text)
+
+    # -------------------------- [Main parsing] --------------------------
+
+    def parse_patch_html(self, patch_html: str, fallback_version: str = "unknown") -> List[BalanceChange]:
+        """Parse a single HTML patch note and return balance changes."""
+        if BeautifulSoup is None:
+            raise ImportError("beautifulsoup4 is required to parse HTML. Please install bs4.")
+        soup = BeautifulSoup(patch_html, "html.parser")
+        body = soup.body or soup
+
+        full_text = body.get_text(" ", strip=True)
+        patch_version = self.extract_patch_version(full_text, fallback=fallback_version)
+
+        changes: List[BalanceChange] = []
+        current_section = None
+        current_agent = None
+        line_counter = 0
+
+        for element in body.find_all(["h1", "h2", "h3", "h4", "p", "li"]):
+            tag_name = element.name
+            text = self.normalize_text(element.get_text(" ", strip=True))
+            if not text:
                 continue
-            
-            # Extract and classify
-            old_val, new_val, unit = self.extract_values(change_text)
-            direction = self.detect_direction(change_text)
-            magnitude = self.estimate_magnitude(change_text, old_val, new_val)
-            
-            # Create change object
-            change = BalanceChange(
-                patch_version=patch_version,
-                agent=current_agent,
-                ability=current_ability,
-                description=change_text,
-                direction=direction,
-                magnitude=magnitude,
-                old_value=old_val,
-                new_value=new_val,
-                unit=unit
-            )
-            
-            changes.append(change)
-        
+
+            if tag_name in {"h1", "h2", "h3", "h4"}:
+                current_section = text
+                heading_agent = self._heading_agent(text)
+                if heading_agent:
+                    current_agent = heading_agent
+                continue
+
+            if self._section_is_skipped(current_section):
+                continue
+
+            if tag_name in {"p", "li"}:
+                line_counter += 1
+                line_num = line_counter
+
+                if not self._is_relevant_line(text):
+                    continue
+
+                agent = self.extract_agent(text) or self._heading_agent(current_section) or current_agent
+                if not agent:
+                    # If we cannot map to an agent, skip to avoid noise
+                    continue
+
+                ability = self.extract_ability(text, agent)
+                old_val, new_val, unit = self.extract_values(text)
+                direction = self.detect_direction(text)
+                magnitude = self.estimate_magnitude(text, old_val, new_val)
+
+                change = BalanceChange(
+                    patch_version=patch_version,
+                    agent=agent,
+                    ability=ability,
+                    description=text,
+                    direction=direction,
+                    magnitude=magnitude,
+                    old_value=old_val,
+                    new_value=new_val,
+                    unit=unit,
+                    line_num=line_num,
+                )
+                changes.append(change)
+
         return changes
-    
+
+    # -------------------------- [DataFrame helpers] --------------------------
+
     def to_dataframe(self, changes: List[BalanceChange]) -> "pd.DataFrame":
         """Converts a list of BalanceChange objects into a Pandas DataFrame."""
-        # Convert list of dataclass objects to list of dictionaries
         if pd is None:
-            raise ImportError("pandas is required to convert changes into a DataFrame")
+            raise ImportError("pandas is required to convert changes into a DataFrame. Please install pandas.")
         data_dicts = [asdict(change) for change in changes]
-        
         df = pd.DataFrame(data_dicts)
-        
-        # Convert enum types to simple strings for easier plotting/export
-        if not df.empty:
-            df['direction'] = df['direction'].apply(lambda x: x.value)
-            df['magnitude'] = df['magnitude'].apply(lambda x: x.value)
-            
+
+        if df.empty:
+            return df
+
+        df["direction"] = df["direction"].apply(lambda x: x.value)
+        df["magnitude"] = df["magnitude"].apply(lambda x: x.value)
+        if "line_num" in df.columns:
+            df = df.rename(columns={"line_num": "lineNum"})
+
         return df
+
+    # -------------------------- [Batch helpers] --------------------------
+
+    def parse_directory(self, directory_path: str) -> "pd.DataFrame":
+        """Parse all HTML files in a directory and return a combined DataFrame."""
+        from pathlib import Path
+
+        directory = Path(directory_path)
+        if not directory.exists():
+            raise FileNotFoundError(f"Directory not found: {directory_path}")
+
+        all_changes: List[BalanceChange] = []
+        for path in directory.glob("*.html"):
+            html_text = path.read_text(encoding="utf-8")
+            version_from_filename = path.stem.split("-")[-1]  # e.g., valorant-patch-notes-11-09 -> 11-09
+            version_from_filename = version_from_filename.replace("-", ".")
+            changes = self.parse_patch_html(html_text, fallback_version=version_from_filename)
+            all_changes.extend(changes)
+            print(f'[PARSER] parsed path {path}.')
+
+        return self.to_dataframe(all_changes)
 
 
 def main():
-    """Example usage with sample Valorant patch notes."""
-    if pd is None:
-        raise ImportError("pandas is required to run the sample summary. Install pandas and rerun.")
-    
-    # Define the patch version explicitly
-    PATCH_VERSION_1 = "v8.01"
-    PATCH_VERSION_2 = "v8.02"
-    
-    # Sample patch note 1: Raze changes
-    patch_note_1 = """
-    **RAZE**
-    
-    **Showstopper**
-    - Equip Time increased 1.1 >>> 1.4 seconds
-    - Quick Equip Time increased 0.5 >>> 0.7 seconds
-    - VFX reduced when firing rocket (Neutral)
-    
-    **Blast Pack**
-    - Damage decreased 75 >>> 50 damage
-    - Damage to objects now consistently does 600 damage
     """
-    
-    # Sample patch note 2: Jett changes
-    patch_note_2 = """
-    **JETT**
-    
-    **Tailwind (Dash)**
-    - Dash window decreased 12m >>> 7.5m
-    - Dash cooldown increase from 20 to 25 seconds
-    - Activation delay increased 0.75 >>> 1.0 seconds
-    
-    **Cloudburst (Smoke)**
-    - Duration increased 4.0s >>> 4.5s
-    - Smoke now blocks vision more effectively (Buff)
+    Example run: parse all scraped HTML under public/patch-notes-html/ and print a quick summary.
     """
-    
     parser = PatchNoteParser()
-    
-    # --- Processing Patch 1 ---
-    changes_1 = parser.parse_patch_note(PATCH_VERSION_1, patch_note_1)
-    df1 = parser.to_dataframe(changes_1)
-    print(f"\n--- PATCH {PATCH_VERSION_1} DATA FRAME ---\n")
-    print(df1[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
-    
-    # --- Processing Patch 2 ---
-    changes_2 = parser.parse_patch_note(PATCH_VERSION_2, patch_note_2)
-    df2 = parser.to_dataframe(changes_2)
-    print(f"\n--- PATCH {PATCH_VERSION_2} DATA FRAME ---\n")
-    print(df2[['patch_version', 'agent', 'ability', 'direction', 'magnitude', 'old_value', 'new_value', 'unit']])
+    try:
+        df = parser.parse_directory("public/patch-notes-html/")
+    except FileNotFoundError as exc:
+        print(f"[ERROR] {exc}")
+        return
 
-    # --- Combine and Summarize ---
-    master_df = pd.concat([df1, df2], ignore_index=True)
+    if df.empty:
+        print("[INFO] No balance changes found.")
+        return
 
-    print("\n\nMASTER DATAFRAME SUMMARY (Both Patches)")
-    print("=" * 70)
-    
-    # Categorize total changes by agent (as requested in the notes)
-    agent_summary = master_df.groupby(['agent', 'direction']).size().unstack(fill_value=0)
-    agent_summary['Total'] = agent_summary.sum(axis=1)
-    
-    print("\n--- Balance Summary by Agent ---")
-    print(agent_summary.sort_values(by='Total', ascending=False))
-    
-    # Example of the historical structure you wanted (Agent vs. Patch)
-    print("\n--- Jett's Historical Changes (Buffs vs. Nerfs) ---")
-    jett_history = master_df[master_df['agent'] == 'Jett']
-    history_pivot = jett_history.pivot_table(
-        index='patch_version', 
-        columns='direction', 
-        aggfunc='size', 
-        fill_value=0
-    )
-    print(history_pivot)
+    print("\n=== Entire Dataframe ===")
+    print(df)
+
+    print("\n=== Parsed Balance Changes ===")
+    print(df[["lineNum", "patch_version", "agent", "ability", "direction", "magnitude", "old_value", "new_value", "unit"]])
+
+    print("\n=== Direction counts per agent ===")
+    print(df.groupby(["agent", "direction"]).size().unstack(fill_value=0))
 
 
 if __name__ == "__main__":

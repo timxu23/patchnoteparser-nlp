@@ -1,0 +1,1867 @@
+<body>
+ <div id="__next">
+  <div>
+   <main>
+    <noscript>
+     <iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-5HX3QC8" style="display: none; visibility: hidden;" width="0">
+     </iframe>
+    </noscript>
+    <div class="sc-1d6c51e5-0 dnseMY global-styles">
+     <div class="sc-f3e76309-0">
+      <header>
+       <div id="riotbar-header">
+       </div>
+      </header>
+      <section class="sc-32b21ae0-0 hQjoeR blade-palette-palette2" data-testid="RiotBar">
+      </section>
+      <section class="sc-32b21ae0-0 hQjoeR sc-299d4039-0 hOXDTw blade-palette-palette2" data-testid="blade">
+       <div class="banner">
+        <div class="sc-4615a568-0 erHixQ" data-testid="backdrop">
+         <div class="sc-fa238766-0 ebiDYY" data-testid="backdrop-background">
+          <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw background-image" data-testid="mediaImage" loading="lazy" role="presentation" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'/>
+         </div>
+        </div>
+        <div class="sc-6bee9aac-0 ieyshm width-medium" data-testid="blade-content">
+         <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw banner-image" data-testid="banner-image" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'/>
+        </div>
+       </div>
+       <div class="sc-6bee9aac-0 ieyshm width-medium" data-testid="blade-content">
+        <div class="content-container">
+         <div class="header">
+          <h1 class="title" data-testid="title">
+           VALORANT Patch Notes 11.08
+          </h1>
+          <div class="richText sc-fde61e5a-0 fxJRfj" data-testid="tagline">
+           <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+            <div>
+             VALAPALOOZA! Agents, maps, &amp; weapon changes arrive to bring the game more in line with our long-term vision of VALORANT.
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="divider">
+         </div>
+         <div class="metadata-with-links">
+          <div class="metadata">
+           <a aria-label="Game Updates" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb" data-testid="category" href="/en-us/news/game-updates/" role="button">
+            <span>
+             Game Updates
+            </span>
+           </a>
+           <div class="authors">
+            <span>
+             JOY
+            </span>
+           </div>
+           <time datetime="2025-10-14T13:00:00.000Z">
+            2025-10-14T13:00:00.000Z
+           </time>
+          </div>
+          <div class="social-links">
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+      <section class="sc-32b21ae0-0 hQjoeR sc-c86c9ff9-0 eLcMII blade-palette-palette2" data-testid="ArticleRichTextBlade">
+       <div class="sc-6bee9aac-0 ieyshm position-undefined width-small" data-testid="blade-content">
+        <div>
+         <div class="richText sc-fde61e5a-0 fxJRfj" data-testid="rich-text">
+          <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+           <div>
+            <p>
+             Hello everyone, this patch is a big one! The entire VALORANT team has been working to bring VALORANT closer to our long-term vision for the game, preserving our core identity as a tactical shooter while evolving toward a healthier balance between gunplay and abilities.
+            </p>
+            <p>
+             TL;DR- we are making adjustments across gameplay to create a healthy dialogue in combat - one where there are clear ways to respond and adapt to what the enemy team is doing round over round. These changes aim to strike a healthier balance between sharp gunplay and the unique abilities that give VALORANT its signature tactical flavor. They span agents, weapons, and maps, all aimed at rewarding strategic decision-making in VALORANT.
+            </p>
+            <h2>
+             ALL PLATFORMS
+            </h2>
+            <h3>
+             GENERAL UPDATES
+            </h3>
+            <ul>
+             <li>
+              Our end of year balance patch is meant to adjust how our maps, weapons, and agents work together. The tuning pass in this patch is designed to reinforce what we call "the competitive dialogue"-the round-to-round exchange between attackers and defenders that rewards adaptation and strategy.
+             </li>
+             <li>
+              Over time, as player skill and ability impact have grown, uncoordinated utility has at times felt just as impactful as well-executed, strategic plays. This has reduced meaningful opportunities for counterplay and diminished the strategic depth we aim for in VALORANT. These changes are focused on striking a healthy balance between gunplay and the abilities that make VALORANT its own unique flavor of tactical shooter.
+             </li>
+            </ul>
+            <h3>
+             AGENT UPDATES
+            </h3>
+            <h4>
+             General
+            </h4>
+            <ul>
+             <li>
+              The agent updates this patch are focused around how we can support higher mastery around ability usage. We want to allow your gunplay to do the talking, while you use abilities strategically and intentionally to gain advantages. These changes should reward players who use abilities well in the right time and place. Additionally, we're also reducing the size of some of the largest ultimate abilities.
+             </li>
+             <li>
+              We're also aiming to create more consistency across the game's various debuffs, making it easier to build muscle memory when playing with or against effects like Nearsight, Concuss, and Stims.
+              <ul>
+               <li>
+                Nearsights
+                <ul>
+                 <li>
+                  Fade's Prowler, Omen's Paranoia, Reyna's Leer, Skye's Seeker
+                 </li>
+                 <li>
+                  Nearsight radius increased from 5 &gt;&gt;&gt; 7m
+                 </li>
+                </ul>
+               </li>
+               <li>
+                Concuss
+                <ul>
+                 <li>
+                  Breach's Fault Line, Gekko's Wingman, Neon's Relay Bolt, Astra's Nova Pulse
+                 </li>
+                 <li>
+                  Concuss duration decreased to 2.5s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                Stim Unification
+                <ul>
+                 <li>
+                  Brimstone's Stim Beacon, KAY/O's NULL/CMD, Reyna's Empress
+                 </li>
+                 <li>
+                  Reload time modifier: 0.9
+                 </li>
+                 <li>
+                  Firing rate modifier: 1.1
+                 </li>
+                 <li>
+                  Weapon draw time modifier: 0.9
+                 </li>
+                 <li>
+                  Spread recovery modifier: 1.1
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h4>
+             Initiators
+            </h4>
+            <p>
+             <em>
+              <strong>
+               Initiators
+              </strong>
+              are intended to be the go-to agents for breaking angles and creating openings for their team. With this update, we're adjusting how often they can use their signature abilities within a round. These abilities should remain impactful, but now demand more coordination and deliberate timing to unlock their full value.
+             </em>
+            </p>
+            <em>
+            </em>
+            <p>
+             <em>
+              Flashes have always been a critical tool for challenging angles, and in a world with less frequent signature abilities, we want them to retain the power needed to start fights. To support that, we've increased the strength of
+              <strong>
+               Initiator flashes
+              </strong>
+              so they remain reliable tools for setting up engagements.
+             </em>
+            </p>
+            <ul>
+             <li>
+              Breach
+              <ul>
+               <li>
+                <strong>
+                 Fault Line
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown increased from 40s → 60s
+                 </li>
+                 <li>
+                  Initial windup decreased from 1.2s → 1.1s
+                 </li>
+                 <li>
+                  Concuss duration decreased from 3.5s → 2.5s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Flash Point
+                </strong>
+                <ul>
+                 <li>
+                  Flash duration increased up from 2s → 2.25s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Rolling Thunder
+                </strong>
+                <ul>
+                 <li>
+                  Width decreased from 23m → 18m
+                 </li>
+                 <li>
+                  Concuss duration decreased from 6s → 4s
+                 </li>
+                 <li>
+                  Ult points decreased from 9 → 8
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Fade
+              <ul>
+               <li>
+                <strong>
+                 Haunt
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown increased from 40s → 60s
+                 </li>
+                 <li>
+                  Haunt active duration decreased 2s → 1.5s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Prowler
+                </strong>
+                <ul>
+                 <li>
+                  Visibility in Nearsight increased from 5m → 7m
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Nightfall
+                </strong>
+                <ul>
+                 <li>
+                  Deafen and Marked duration decreased from 12s → 8s
+                 </li>
+                 <li>
+                  Width decreased from 24m → 20m
+                 </li>
+                 <li>
+                  Decay now remains a consistent 75 damage over its duration instead of decreasing over time
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Gekko
+              <ul>
+               <li>
+                General
+                <ul>
+                 <li>
+                  Cooldown upon reclaim increased from 10s → 20s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Wingman
+                </strong>
+                <ul>
+                 <li>
+                  Health decreased from 80 → 60
+                 </li>
+                 <li>
+                  Concuss duration decreased from 3.5s → 2.5s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Thrash
+                </strong>
+                &lt;
+                <ul>
+                 <li>
+                  Health decreased from 200 → 180
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              KAY/O
+              <ul>
+               <li>
+                <strong>
+                 ZERO/POINT
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown increased from 40s → 60s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 FLASH/DRIVE
+                </strong>
+                <ul>
+                 <li>
+                  Underhand maximum flash duration increased from 1.5s → 2.25s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 NULL/CMD
+                </strong>
+                <ul>
+                 <li>
+                  Updated to match Stim standardization
+                  <ul>
+                   <li>
+                    Increased fire rate reduced from 15% → 10%
+                   </li>
+                   <li>
+                    Added standardized weapon draw time for Stims
+                    <ul>
+                     <li>
+                      NEW: Increased weapon draw speed by 10%
+                     </li>
+                    </ul>
+                   </li>
+                   <li>
+                    Added weapon recovery speed for Stims
+                    <ul>
+                     <li>
+                      Weapon recovery speed increase by 10%
+                     </li>
+                    </ul>
+                   </li>
+                  </ul>
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Sova
+              <ul>
+               <li>
+                <strong>
+                 Recon Bolt
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown increased from 40s → 60s
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h4>
+             Duelists
+            </h4>
+            <p>
+             <em>
+              Most Duelist gameplay is in a healthy state, so we're making minor tunings. We want stuns and slows to feel rewarding when they lead to kills, so we're making adjustments that will reward precise timing and well-coordinated ability combos.
+             </em>
+            </p>
+            <ul>
+             <li>
+              Iso
+              <ul>
+               <li>
+                <strong>
+                 Kill Contract
+                </strong>
+                <ul>
+                 <li>
+                  Length decreased from 48m → 36m
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Neon
+              <ul>
+               <li>
+                Neon's High Gear changes allow Neon to make more significant timing breaks but will require more thoughtful resource management.
+               </li>
+               <li>
+                <strong>
+                 High Gear
+                </strong>
+                <ul>
+                 <li>
+                  Battery recharge decreased, time to recharge to full battery increased from 20s → 60s
+                 </li>
+                 <li>
+                  Battery drain reduced, increasing sprint time with full battery from 12s → 16s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Relay Bolt
+                </strong>
+                <ul>
+                 <li>
+                  Concuss duration decreased 3.5s → 2.5s
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Reyna
+              <ul>
+               <li>
+                <strong>
+                 Leer
+                </strong>
+                <ul>
+                 <li>
+                  Health decreased from 80 → 60
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Empress
+                </strong>
+                <ul>
+                 <li>
+                  Updated to match stim standardization
+                 </li>
+                 <li>
+                  Reduced reload time decrease from 25% → 10%
+                 </li>
+                 <li>
+                  Reduced fire rate increase from 15% → 10%
+                 </li>
+                 <li>
+                  Increased weapon draw speed reduced from 25% &gt;&gt;&gt; 10%
+                 </li>
+                 <li>
+                  Reduced weapon recovery speed increase from 25% → 10%
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Waylay
+              <ul>
+               <li>
+                <strong>
+                 Saturate
+                </strong>
+                <ul>
+                 <li>
+                  Hindered duration decreased from 4s → 3s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Convergent Paths
+                </strong>
+                <ul>
+                 <li>
+                  Ultimate no longer spawns an afterimage of Waylay, and she is no longer pushed back when casting
+                 </li>
+                 <li>
+                  Ultimate now briefly restricts aim rotation and movement speed similar to Breach's Rolling Thunder when casting
+                 </li>
+                 <li>
+                  Hindered duration decreased from 7s → 6s
+                 </li>
+                 <li>
+                  Initial windup decreased from 2s → 1s
+                 </li>
+                 <li>
+                  Width decreased from 18m → 13.5m
+                 </li>
+                 <li>
+                  Decreased movement speed buff on ult from 15% → 10%
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Yoru
+              <ul>
+               <li>
+                <em>
+                 We've seen a notable rise in Yoru mastery, but his kit has become so effective it can overshadow other Duelists, and even some Initiators. We're making changes to make his tools a bit more selfish and encourage coordinated team plays to achieve his potential.
+                </em>
+               </li>
+               <li>
+                <strong>
+                 Gatecrash
+                </strong>
+                <ul>
+                 <li>
+                  Health decreased from 60 → 20
+                 </li>
+                 <li>
+                  Audio now plays from Yoru's location when Yoru teleports or fakes it
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Fakeout
+                </strong>
+                <ul>
+                 <li>
+                  Flash duration decreased from 3s → 2s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Blindside
+                </strong>
+                <ul>
+                 <li>
+                  Flash duration decreased from 1.75s → 1.5s
+                 </li>
+                 <li>
+                  Flash now follows the standard flash falloff curves as other Agents. Previously, Yoru's flashes that were slightly offscreen were more effective than intended
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Dimensional Drift
+                </strong>
+                <ul>
+                 <li>
+                  Yoru can no longer cast Blindside, or set up his fakeout during Dimensional Drift
+                 </li>
+                 <li>
+                  He can still cast the initial Gatecrash and reactivation, as well as reactivation of Fakeouts
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Raze
+              <ul>
+               <li>
+                <strong>
+                 Blast Pack
+                </strong>
+                <ul>
+                 <li>
+                  Raze can now affected by Slows while midair with Blast Pack
+                 </li>
+                 <li>
+                  If Slowed, the force from Blast Pack will be reduced, similar to how slows affect other Dashes
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h4>
+             Controllers
+            </h4>
+            <p>
+             <em>
+              Controllers were largely in a healthy state and required few changes, though some abilities have been adjusted to align with recent roster-wide updates.
+             </em>
+            </p>
+            <ul>
+             <li>
+              Astra
+              <ul>
+               <li>
+                <strong>
+                 Gravity Well
+                </strong>
+                <ul>
+                 <li>
+                  Fragile duration decreased from 5s → 2.5s
+                 </li>
+                 <li>
+                  Cooldown increased from 45s → 60s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Nova Pulse
+                </strong>
+                <ul>
+                 <li>
+                  Concuss duration decreased from 3.5s → 2.5s
+                 </li>
+                 <li>
+                  Cooldown increased from 45s → 60s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Nebula
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown increased 25s → 35s
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Brimstone
+              <ul>
+               <li>
+                <strong>
+                 Stim Beacon
+                </strong>
+                <ul>
+                 <li>
+                  Updated to match stim standardization
+                  <ul>
+                   <li>
+                    Decreased fire rate increase from 15% → 10%
+                   </li>
+                   <li>
+                    Decreased movement speed increase from 15% → 10%
+                   </li>
+                  </ul>
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Omen
+              <ul>
+               <li>
+                <strong>
+                 Dark Cover
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown increased from 30s → 40s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Paranoia
+                </strong>
+                <ul>
+                 <li>
+                  Projectile speed increased from 16 meters per second → 20 meters per second
+                 </li>
+                 <li>
+                  Travel distance reduced from 32.5m → 25m
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Viper
+              <ul>
+               <li>
+                Initial contact now inflicts less Decay, reduced from 30 → 10 health
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h4>
+             Sentinels
+            </h4>
+            <p>
+             <em>
+              Sentinels are premier at defending territory, but we think there can be more room for dialogue between attackers and defensive Sentinel utilities. These adjustments aim to make it easier to take advantage of intended counterplay while sharpening each Sentinel's unique identity. We're also reducing the health of some of the tankier shootables to make them sponge less of your bullets.
+             </em>
+            </p>
+            <ul>
+             <li>
+              Vyse
+              <ul>
+               <li>
+                <em>
+                 Vyse has been great at stalling and punishing enemies that move recklessly through her space but countering her has been more difficult than intended. We're adjusting Shear and Arc Rose's counterplay rules to make them simpler and more consistent for enemies to perform.
+                </em>
+               </li>
+               <li>
+                <strong>
+                 Arc Rose
+                </strong>
+                <ul>
+                 <li>
+                  Arc Rose is now destructible after the flash windup starts rather than being invulnerable.
+                 </li>
+                 <li>
+                  When enemy players are successfully flashed, the audio cue and voiceline alerting Vyse and her allies is removed
+                 </li>
+                 <li>
+                  Flash duration decreased from 2.25s → 2.0s
+                 </li>
+                 <li>
+                  Cooldown are slightly adjusted
+                  <ul>
+                   <li>
+                    After destruction, cooldown is increased from 45s → 60s
+                   </li>
+                   <li>
+                    Recalling the ability will now always incur a 20s cooldown
+                   </li>
+                  </ul>
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Shear
+                </strong>
+                <ul>
+                 <li>
+                  Wall Trap trigger logic has been reworked to make it easier to bait out. The wall now spawns immediately when an enemy enters and then leaves its trigger zone. Enemies will also hear an audio cue, audible only to them, when they enter the trigger zone
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Razorvine
+                </strong>
+                <ul>
+                 <li>
+                  Health decreased from 40 → 20
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Steel Garden
+                </strong>
+                <ul>
+                 <li>
+                  Initial windup increased from 3.4s → 4.4s
+                 </li>
+                 <li>
+                  Radius decreased from 32.5m → 26m
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Cypher
+              <ul>
+               <li>
+                <em>
+                 We're asking Cypher players to be craftier with their camera placements and focus on his role as a surveillance network master. Enemies will now see and hear a Spycam when it is nearby, similar to Vyse's Arc Rose. Trapwire has been adjusted to be less lethal, though Cypher can still convert to a kill when they are disrespected.
+                </em>
+               </li>
+               <li>
+                <strong>
+                 Spycam
+                </strong>
+                <ul>
+                 <li>
+                  Added stealthing functionality
+                  <ul>
+                   <li>
+                    Inactive camera will be revealed to enemies when you are within 8 meter radius of the camera, and will also have an accompanying audio tell
+                   </li>
+                   <li>
+                    When the camera is active, there will be a louder persistent camera audio for enemies with a 12m range
+                   </li>
+                  </ul>
+                 </li>
+                 <li>
+                  Cooldown when destroyed is increased from 45s → 60s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Trapwire
+                </strong>
+                <ul>
+                 <li>
+                  Windup decreased
+                  <ul>
+                   <li>
+                    PC: 1.5s → 0.9s
+                   </li>
+                   <li>
+                    Console: 2.5 → 1.9s
+                   </li>
+                  </ul>
+                 </li>
+                 <li>
+                  Players are no longer revealed after 0.5 seconds of the tripwire winding up
+                  <ul>
+                   <li>
+                    Players are tagged + slowed by 50% when chained
+                   </li>
+                   <li>
+                    If you move more than 4m outwards from the wire it will now immediately zap you instead of pulling you back
+                   </li>
+                  </ul>
+                 </li>
+                 <li>
+                  Trapwire zap no longer concusses its target. Instead, it will slow + reveal its target for 1 second.
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Killjoy
+              <ul>
+               <li>
+                We're increasing the counterplay around Killjoy's range restricted utilities, giving enemies more tells to maneuver around unattended utilities and asking KJ to make a sharper call on when to keep her utility active and when to reposition away from them.
+               </li>
+               <li>
+                <strong>
+                 Turret
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown when destroyed increased from 45s → 60s
+                 </li>
+                 <li>
+                  Reactivation time for turret increased from 0.5s → 2s
+                 </li>
+                 <li>
+                  Turret movement tagging per bullet increased 29.5% &gt;&gt;&gt; 50%
+                 </li>
+                 <li>
+                  NEW: Added a "windup" effect when Killjoy first re-enters the activation range
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Alarmbot
+                </strong>
+                <ul>
+                 <li>
+                  Health decreased from 50 to 20
+                 </li>
+                 <li>
+                  Reactivation time increased from 1s → 2s
+                 </li>
+                 <li>
+                  NEW: Added a "windup" effect when Killjoy first re-enters the activation range
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Deadlock
+              <ul>
+               <li>
+                <strong>
+                 GravNet
+                </strong>
+                <ul>
+                 <li>
+                  Cooldown increased from 40s &gt;&gt;&gt; 60s
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Barrier Mesh
+                </strong>
+                <ul>
+                 <li>
+                  Cost reduced from 400 to 300
+                 </li>
+                 <li>
+                  Health of smaller nodes decreased from 570 to 480
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Sonic Sensor
+                </strong>
+                <ul>
+                 <li>
+                  Concuss duration reduced 3.5s to 2.5s
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              Sage
+              <ul>
+               <li>
+                <strong>
+                 Barrier Orb
+                </strong>
+                <ul>
+                 <li>
+                  Cost reduced from 400 to 300
+                 </li>
+                 <li>
+                  Fortification delay reduced from 3.3 seconds to 2 seconds
+                 </li>
+                 <li>
+                  Health of Barrier segments decreased from 800 to 600
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h3>
+             MAP UPDATES
+            </h3>
+            <ul>
+             <li>
+              In general, our focus for this patch was to encourage more on-site play for both teams, and to make planting for main more risky and predictable.
+             </li>
+             <li>
+              <strong>
+               Pearl
+              </strong>
+              <ul>
+               <li>
+                Defending post-plant positions from B Main should remain a viable strategy, but it's become overly difficult for defenders to retake the site, particularly when utility is in play. To address this, we're making the following changes:
+                <ul>
+                 <li>
+                  B-Site
+                  <ul>
+                   <li>
+                    <strong>
+                     Removed the deep sightline from B Long
+                    </strong>
+                    - This angle provided too much control over the site from a safe distance
+                   </li>
+                   <li>
+                    <strong>
+                     Adjusted cover positioning on and around the site
+                    </strong>
+                    - These changes will encourage more direct engagements on the site itself
+                   </li>
+                  </ul>
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <br/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/feef18541fa105a4f014c5966e3fec395095d6e0-607x1075.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/d3a3207ed532f21c1fa3a3b7e01947ad85fc6354-604x1076.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/6356cd2959d5804901e1c28161cc8b41c367dab4-604x1078.jpg"/>
+            <br/>
+            <ul>
+             <li>
+              <strong>
+               Abyss
+              </strong>
+              <ul>
+               <li>
+                Seeing the map evolve over the last year, we've observed many prominent strategies emerge and identified areas that could be improved, mainly focused on strengthening defensibility and improving pathing
+               </li>
+               <li>
+                B-Site
+                <ul>
+                 <li>
+                  <strong>
+                   Site Changes
+                  </strong>
+                  - Currently both teams are having a tough time playing on-site-Defenders struggle with the initial site hold, while Attackers have difficulty holding the spike during post-plant and feel forced to plant for main. We want to take a pass at improving on-site play for both teams while also making post-plants for main more risky.
+                 </li>
+                </ul>
+               </li>
+               <li>
+                Mid
+                <ul>
+                 <li>
+                  <strong>
+                   Mid Hallway Changes
+                  </strong>
+                  - We want to help open up quicker macro pathing options for both teams. We're adjusting the hallway in Mid that leads towards B Main to allow for improved flow through the map for both teams.
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <br/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/54500fd9b7b501c15b4d0079c8988de8e0af3f58-607x1076.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/b1bb41c3b37122f87ef40b0c225a75e4bd5e25fd-610x1074.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/3315d8506e91ced9c0b5d55c642a19bdfa17c4b4-605x1077.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/a6e9ae0d360523be1357bc23037dffb9c6c3e808-604x1076.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/410cc7230d83bad0858b03123220fffb397aff1b-607x1069.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/9589322b126e216dbd97125690679bc70972b1d8-608x1078.jpg"/>
+            <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/9400790d504ba2cc2404d3c00fc6761967fa5c8c-609x1075.jpg"/>
+            <ul>
+             <li>
+              MAP POOL UPDATES
+              <ul>
+               <li>
+                <strong>
+                 PEARL
+                </strong>
+                and
+                <strong>
+                 SPLIT
+                </strong>
+                are IN the COMPETITIVE and DEATHMATCH queues.
+               </li>
+               <li>
+                <strong>
+                 LOTUS
+                </strong>
+                and
+                <strong>
+                 ASCENT
+                </strong>
+                are OUT of the COMPETITIVE and DEATHMATCH queues.
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h3>
+             WEAPONS UPDATES
+            </h3>
+            <p>
+             Our goal is for VALORANT's gunplay to feel rewarding to master with exciting weapon choices, allowing for players to express their playstyles in how they take fights. Each weapon in our arsenal should feel they have a unique identity with their own strengths and weaknesses and though the arsenal has felt like it's overall pretty healthy, we want to make sure we continue to push on making weapons feel like competitive choices for different scenarios and round economy states.
+            </p>
+            <h4>
+             PC ONLY
+            </h4>
+            <ul>
+             <li>
+              Rifles
+              <ul>
+               <li>
+                We've noticed that tap strafing has been generally the most viable shooting style. We want the decision between tapping, bursting, and spraying to feel more balanced and a more meaningful optimization. We are making some minor adjustments to spraying rifles to make them more of a viable option for fights at the close and mid ranges.
+               </li>
+               <li>
+                A quick definition for those of you who may not know-
+                <ul>
+                 <li>
+                  % chance of yaw switch: % chance the gun will swap horizontal recoil from one side to the other (left vs right from your crosshair)
+                 </li>
+                 <li>
+                  Yaw switch time: how quickly the gun swaps horizontal recoil from one side to the other. When yaw switch time increases, this means you have more time to counteract the recoil
+                 </li>
+                 <li>
+                  Protected bullet counts: how many bullets in a spray you can use before your gun has a chance of yaw switch
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Bulldog
+                </strong>
+                <ul>
+                 <li>
+                  Horizontal (Yaw) switch time increased from 0.37s → 0.6s&lt;
+                 </li>
+                 <li>
+                  Chance for horizontal (Yaw) to switch increased from 6% → 10%
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Phantom
+                </strong>
+                <ul>
+                 <li>
+                  Horizontal (Yaw) switch time increased from 0.37s → 0.6s
+                 </li>
+                 <li>
+                  Chance for horizontal (Yaw) to switch increased from 6% → 10%
+                 </li>
+                 <li>
+                  Protected bullet count increased from 6 → 8 bullets
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Vandal
+                </strong>
+                <ul>
+                 <li>
+                  Horizontal (Yaw) switch time increased from 0.37s → 0.6s
+                 </li>
+                 <li>
+                  Chance for horizontal (Yaw) to switch increased from 6% → 10%
+                 </li>
+                 <li>
+                  Protected bullet count increased from 4 → 6 bullets
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <ul>
+             <li>
+              Submachine guns
+              <ul>
+               <li>
+                We're making some changes to SMGs to make the Spectre a more appealing purchase over the Stinger in some scenarios, while also increasing the mastery needed to control the weapon when trying to punch up in eco rounds.
+               </li>
+               <li>
+                <strong>
+                 Spectre
+                </strong>
+                <ul>
+                 <li>
+                  Total spread reduced from 1.5 → 1.3
+                 </li>
+                 <li>
+                  Tap Efficiency increased from 2 → 3
+                  <ul>
+                   <li>
+                    Tap Efficiency determines the rate that inaccuracy is accrued when re-firing prior to waiting for the complete duration of a weapon's respective Gun Recovery Time. The higher the Tap Efficiency, the lower the rate of inaccuracy accrual
+                   </li>
+                  </ul>
+                 </li>
+                 <li>
+                  Horizontal (Yaw) switch time increased from 0.18s → 0.28s
+                 </li>
+                 <li>
+                  Protected bullet count increased from 4 → 5 bullets
+                 </li>
+                </ul>
+               </li>
+               <li>
+                <strong>
+                 Stinger
+                </strong>
+                <ul>
+                 <li>
+                  Full Auto
+                 </li>
+                 <li>
+                  Total spread increased from 1.3 → 1.5
+                 </li>
+                 <li>
+                  Total spread accrued faster from 7 bullets → 6 bullets
+                 </li>
+                 <li>
+                  Vertical (Pitch) recoil curve increases more aggressively
+                  <ul>
+                   <li>
+                    Total recoil is unchanged
+                   </li>
+                  </ul>
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h4>
+             CONSOLE ONLY
+            </h4>
+            <ul>
+             <li>
+              <strong>
+               Spectre
+              </strong>
+              <ul>
+               <li>
+                Horizontal (Yaw) switch time increased from 0.20s → 0.28s
+               </li>
+              </ul>
+             </li>
+             <li>
+              <strong>
+               Stinger
+              </strong>
+              <ul>
+               <li>
+                Full Auto
+                <ul>
+                 <li>
+                  Vertical (Pitch) recoil curve increases more aggressively
+                  <ul>
+                   <li>
+                    Total recoil is unchanged
+                   </li>
+                  </ul>
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              <strong>
+               Bulldog
+              </strong>
+              <ul>
+               <li>
+                Horizontal (Yaw) switch time increased from 0.50s → 0.60s
+               </li>
+              </ul>
+             </li>
+             <li>
+              <strong>
+               Phantom
+              </strong>
+              <ul>
+               <li>
+                Horizontal (Yaw) switch time increased from 0.50s → 0.6s
+               </li>
+               <li>
+                Protected bullet count from yaw (horizontal) switching while spraying, increased from 5 → 8 bullets
+               </li>
+              </ul>
+             </li>
+             <li>
+              <strong>
+               Vandal
+              </strong>
+              <ul>
+               <li>
+                Horizontal (Yaw) switch time increased from 0.50s &gt;&gt;&gt; 0.6s
+               </li>
+               <li>
+                Protected bullet count from yaw (horizontal) switching while spraying, increased from 5 → 6 bullets
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h2>
+             COMPETITIVE UPDATES
+            </h2>
+            <ul>
+             <li>
+              Starting in 11.09, accounts detected for sharing must enable Riot Mobile multi-factor authentication (MFA) to access Competitive queue. Other modes will remain unaffected.
+             </li>
+             <li>
+              For now in 11.08, you can check out the banner in the Competitive lobby or
+              <a href="https://playvalorant.com/en-us/news/game-updates/riot-mobile-verification-beta/" rel="noopener noreferrer nofollow" target="_blank">
+               this article
+              </a>
+              for more information on the upcoming changes.
+             </li>
+            </ul>
+            <h2>
+             GAMEPLAY SYSTEMS UPDATES
+            </h2>
+            <ul>
+             <li>
+              We've improved how Placeable Abilities like Cypher's Spycam and Deadlock's Sound Sensor previews when placing in our maps. All previews will now better align to the eventual location of your ability.
+              <ul>
+               <li>
+                We have not added or removed any placement options, we have only made our previews more accurate. This is especially so for Deadlock's Sound Sensor, which will see the biggest preview change, moving away from the current snappy behavior, to a more smooth preview.
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h2>
+             PLAYER BEHAVIOR UPDATES
+            </h2>
+            <ul>
+             <li>
+              Added "Rank Manipulation" as a new reporting category.
+              <ul>
+               <li>
+                Please use 'Rank Manipulation' instead of 'Cheating' to report players who abuse matchmaking. This encompasses behaviors we commonly know as smurfing, wintrading, and boosting.
+               </li>
+              </ul>
+             </li>
+            </ul>
+            <h2>
+             PC ONLY
+            </h2>
+            <h3>
+             PREMIER UPDATES
+            </h3>
+            <ul>
+             <li>
+              <strong>
+               Welcome to Stage V25A6!
+              </strong>
+              <ul>
+               <li>
+                At the end of this Stage, the top 16 teams in Invite will remain in Invite. All other Invite teams will be demoted at the start of the next Stage. These rules are listed on the Standings tab.
+               </li>
+               <li>
+                Demoted teams will seed into the zone they originally promoted from. Next Stage, Team Owners can change their zone in the Team Settings dropdown anytime before the team plays a match.
+               </li>
+               <li>
+                If your team cannot be placed into a zone at the start of the next Stage, your Team Owner will be prompted to select a zone.
+               </li>
+               <li>
+                Divisions other than Invite will not have demotion, and teams will still be promoted or be seeded into a division as normal at the start of next Stage.
+               </li>
+              </ul>
+             </li>
+             <li>
+              <strong>
+               Contender Eligibility updates
+              </strong>
+              <ul>
+               <li>
+                Contender Eligibility for 2025 expires at the end of Stage V25A6.
+               </li>
+               <li>
+                To be Contender Eligible in 2026, you must perform a qualifying action in Stage V25A6 or at any point in 2026.
+               </li>
+               <li>
+                Qualifying actions include:
+                <ul>
+                 <li>
+                  Play a Weekly or Playoff match on a team in Contender or Invite Division.
+                 </li>
+                 <li>
+                  Reach Immortal 3 or higher peak rank in Competitive.
+                 </li>
+                 <li>
+                  Play in a Playoff match in Elite 5.
+                 </li>
+                 <li>
+                  Contender Eligibility for 2026 expires at the end of 2026.
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+             <li>
+              <strong>
+               VCT Team Tags
+              </strong>
+              <ul>
+               <li>
+                Starting this patch, we're expanding the Team Tag feature to include tags for VCT teams! Pros will now have their team's tag shown before their name throughout the client - in the social panel, in lobby, in game (like the killfeed), and on the Competitive Leaderboards!
+               </li>
+               <li>
+                VCT team names and tags are reserved ONLY for VCT partnered teams.
+                <ul>
+                 <li>
+                  Current Premier teams that have a team name and/or tag of a VCT partnered team will receive a prompt in-game for their Team Owner to change their team name.
+                 </li>
+                </ul>
+               </li>
+              </ul>
+             </li>
+            </ul>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+      <section class="sc-32b21ae0-0 hQjoeR sc-99af286a-0 faeCJD blade-palette-palette2" data-testid="article-card-carousel" id="related-articles" layout="3up">
+       <div class="sc-6bee9aac-0 ieyshm width-large" data-testid="blade-content">
+        <div class="sc-4615a568-0 erHixQ" data-testid="backdrop">
+         <div class="sc-fa238766-0 ebiDYY" data-testid="backdrop-background">
+         </div>
+         <div class="sc-bdcf746a-0 eeJDQC" data-testid="backdrop-foreground">
+         </div>
+        </div>
+        <div class="header">
+         <h2 data-testid="title">
+          Related Articles
+         </h2>
+        </div>
+        <div aria-label="carousel-:R1p5la6:" aria-roledescription="carousel" class="embla sc-2e0aa8f0-0 eiYRGk" data-active-slide="0" data-state-all-slides-visible="false" data-state-next="true" data-state-previous="true" data-testid="carousel" id="carousel-:R1p5la6:" role="region">
+         <div aria-activedescendant="carousel-:R1p5la6:-slide-0" class="sc-22590255-0 kbuMqN" data-testid="viewport" dir="ltr" role="group" tabindex="0">
+          <ol aria-live="polite" class="sc-d7ac92a-0 dTVXdJ horizontal" data-testid="slides-container" role="group">
+           <li aria-hidden="false" aria-label="1 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="true" data-slide-index="0" data-testid="slide" id="carousel-:R1p5la6:-slide-0" role="group">
+            <a aria-label="VALORANT Patch Notes 11.11" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-11" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-12-02T14:00:00.000Z">
+                   2025-12-02T14:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.11
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    Minor UI updates, Bug Fixes, VP gifting, and a festive surprise coming soon.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="2 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="1" data-testid="slide" id="carousel-:R1p5la6:-slide-1" role="group">
+            <a aria-label="VALORANT Patch Notes 11.10" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-10" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-11-11T14:00:00.000Z">
+                   2025-11-11T14:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.10
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    The Harbor Rework is here! Along with QoL updates, balance updates to Clove, and bug fixes.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="3 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="2" data-testid="slide" id="carousel-:R1p5la6:-slide-2" role="group">
+            <a aria-label="VALORANT Patch Notes 11.09" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-09" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-10-28T13:00:00.000Z">
+                   2025-10-28T13:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.09
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    MFA added for shared accounts, quality of life updates, and bug fixes.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="4 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="3" data-testid="slide" id="carousel-:R1p5la6:-slide-3" role="group">
+            <a aria-label="VALORANT Patch Notes 11.07b" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-07b" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-10-07T13:00:00.000Z">
+                   2025-10-07T13:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.07b
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    Veto is out and Skirmish is live.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="5 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="4" data-testid="slide" id="carousel-:R1p5la6:-slide-4" role="group">
+            <a aria-label="VALORANT Patch Notes 11.07" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-07" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-09-30T13:00:00.000Z">
+                   2025-09-30T13:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.07
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    Visual clarity updates, consistent information across abilities, new customs-only game mode, and more.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="6 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="5" data-testid="slide" id="carousel-:R1p5la6:-slide-5" role="group">
+            <a aria-label="VALORANT Patch Notes 11.06" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-06" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-09-16T13:00:00.000Z">
+                   2025-09-16T13:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.06
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    Yes, it’s happening. Replays are here.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="7 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="6" data-testid="slide" id="carousel-:R1p5la6:-slide-6" role="group">
+            <a aria-label="VALORANT Patch Notes 11.05" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-05" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-09-02T13:00:00.000Z">
+                   2025-09-02T13:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.05
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    Light changes as we lead up into Champions Paris.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="8 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="7" data-testid="slide" id="carousel-:R1p5la6:-slide-7" role="group">
+            <a aria-label="VALORANT Patch Notes 11.04" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-04" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-08-19T13:00:00.000Z">
+                   2025-08-19T13:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.04
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    Sage mains rejoice, new map rotation, and some more.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="9 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="8" data-testid="slide" id="carousel-:R1p5la6:-slide-8" role="group">
+            <a aria-label="VALORANT Patch Notes 11.02" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-02" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-07-29T13:00:00.000Z">
+                   2025-07-29T13:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.02
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    VALORANT is upgrading to Unreal 5, plus some bug fixes.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+           <li aria-hidden="true" aria-label="10 of 0" aria-roledescription="slide" class="sc-127f821f-0 djppvy clickable" data-focused="false" data-slide-active="false" data-slide-index="9" data-testid="slide" id="carousel-:R1p5la6:-slide-9" role="group">
+            <a aria-label="VALORANT Patch Notes 11.01" class="sc-b988531e-0 bvEIZU sc-d043b2-0 bZMlAb sc-8e176a18-5 keDLkF action" data-testid="articlefeaturedcard-component" href="/en-us/news/game-updates/valorant-patch-notes-11-01" role="button">
+             <span>
+              <div class="sc-6fae0810-0 kZtTQ" data-testid="card">
+               <div class="sc-729df4b-0 linrEJ action" data-testid="card-image">
+                <div class="sc-cf6885cf-0 faINlR" data-aspect-ratio="1.7777777777777777" data-testid="aspect-ratio-container">
+                 <div class="innerWrapper">
+                  <img alt="" class="sc-58849faf-0 cSsvPi sc-2a9d3880-0 iOotgw sc-1f4a6b27-0 cBMoRk fit-undefined crop-true" data-testid="mediaImage" loading="lazy" src='data:image/svg+xml,&lt;svg xmlns="http://www.w3.org/2000/svg"/&gt;'>
+                   <span aria-label="external link" class="sc-51054a11-0 eUDkZQ icon icon-action-external-link icon-action-external-link" data-testid="icon-action-external-link" role="img" title="external link">
+                   </span>
+                  </img>
+                 </div>
+                </div>
+               </div>
+               <div class="sc-7de9a0de-0 gkGxLO" data-testid="card-body">
+                <div class="sc-8e176a18-1 krJdCh">
+                 <div class="sc-8e176a18-2 bIQWGK" data-testid="card-category">
+                  Game Updates
+                 </div>
+                 <div class="sc-8e176a18-4 kXuvsQ">
+                 </div>
+                 <div class="sc-8e176a18-3 iSBdYn" data-testid="card-date">
+                  <time datetime="2025-07-14T14:00:00.000Z">
+                   2025-07-14T14:00:00.000Z
+                  </time>
+                 </div>
+                </div>
+                <div class="sc-ce9b75fd-0 lmZfRs" data-testid="card-title">
+                 VALORANT Patch Notes 11.01
+                </div>
+                <div class="sc-85c0bd82-0 faqZib" data-testid="card-description">
+                 <div class="richText sc-fde61e5a-0 sc-c74a5453-0 fxJRfj gBObxf" data-testid="rich-text">
+                  <div class="sc-4225abdc-0 lnNUuw" data-testid="rich-text-html">
+                   <div>
+                    We’re skipping this patch to prepare for the Unreal Engine 5 upgrade with
+11.02.
+                   </div>
+                  </div>
+                 </div>
+                </div>
+               </div>
+              </div>
+             </span>
+            </a>
+           </li>
+          </ol>
+         </div>
+         <div class="sc-776e9ee9-0 ePQIpK sc-f8c3aad4-0 dGnqpy" data-testid="controls-container">
+          <div class="sc-c128b5c7-0 bzPega" data-testid="progress-bar">
+           <div class="rail">
+            <div class="indicator" style="width:0%">
+            </div>
+           </div>
+          </div>
+          <div class="trigger-wrapper">
+           <button aria-label="previous-button" class="sc-3d9e775-0 xGmIR prev sc-2025ad74-0 cCmsRj trigger-previous" data-testid="previous-button" tabindex="-1" type="button">
+            <span aria-label="carouselLeft-icon" class="sc-51054a11-0 eUDkZQ icon icon-carouselLeft icon-carouselLeft" data-testid="icon-carouselLeft" role="img" title="carouselLeft-icon">
+            </span>
+           </button>
+           <button aria-label="next-button" class="sc-3d9e775-0 xGmIR next sc-266d5fb8-0 bVHQSj trigger-next" data-testid="next-button" tabindex="-1" type="button">
+            <span aria-label="carouselRight-icon" class="sc-51054a11-0 eUDkZQ icon icon-carouselRight icon-carouselRight" data-testid="icon-carouselRight" role="img" title="carouselRight-icon">
+            </span>
+           </button>
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+      <footer>
+       <div id="riotbar-footer">
+       </div>
+      </footer>
+     </div>
+    </div>
+   </main>
+  </div>
+ </div>
+</body>
