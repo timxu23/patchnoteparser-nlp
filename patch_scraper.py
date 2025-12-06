@@ -2,7 +2,7 @@
 simple patch note scraper
 this will help us scrape a bunch of testing texts to test the rest of our parsing
 takes in args -- the first n args are the patchnote url to be scraped, and
-the last arg is directory to be saved in. default: public/patch-notes-test/
+the last arg is directory to be saved in. default: public/patch-notes-html/
 
 USAGE: python3 patch_scraper.py <your-urls> -o custom/save-path
 '''
@@ -29,8 +29,8 @@ def parse_arguments():
     parser.add_argument("urls", metavar='URL', type=str, nargs='+', help="Need url")
 
     parser.add_argument('-o', '--output-dir', dest='dir_path', 
-                        type=str, default='public/patch-notes-test/', 
-                        help='directory where everything is saved at. Default: public/patch-notes-test/')
+                        type=str, default='public/patch-notes-html/', 
+                        help='directory where everything is saved at. Default: public/patch-notes-html/')
     return parser.parse_args()
 
 
@@ -47,13 +47,15 @@ def run_scraper():
 
     print(f"[SCRAPER] PROCESSING {len(sys.argv)} FILES")
     print(f"[SCRAPER] OUTPUT DIRECTORY SET TO: {dir_path}")
+    text_dir = 'public/patch-notes-test/'
 
-    try:
-        os.makedirs(dir_path, exist_ok=True)
-        print(f'[SCRAPER] directory setup complete: {dir_path}')
-    except OSError as e:
-        print(f'[SCRAPER] ERROR: could not create a directory {dir_path}. \n {e}')
-        sys.exit(1)
+    for target_dir in (dir_path, text_dir):
+        try:
+            os.makedirs(target_dir, exist_ok=True)
+            print(f'[SCRAPER] directory setup complete: {target_dir}')
+        except OSError as e:
+            print(f'[SCRAPER] ERROR: could not create a directory {target_dir}. \n {e}')
+            sys.exit(1)
 
     # scraping 
     for url in urls:
@@ -66,10 +68,11 @@ def run_scraper():
 
         for script in soup(["script", "style"]):
             script.extract()
-        text = soup.get_text()
-        lines = (line.strip() for line in text.splitlines())
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        text = '\n'.join(chunk for chunk in chunks if chunk)
+        # Preserve structural and emphasis tags instead of flattening to plain text.
+        content_root = soup.body or soup
+        html_output = content_root.prettify()
+        # Also save the exact markup to a .txt mirror for downstream parsing convenience.
+        text_output = html_output
 
         # ------------ file saving -------------
         
@@ -83,15 +86,22 @@ def run_scraper():
             base_filename = 'scraped_content'
 
         filename_slug = slugify(base_filename)
-        filename = f"{filename_slug or 'unknown-url'}.txt"
+        filename = f"{filename_slug or 'unknown-url'}.html"
         output_path = os.path.join(dir_path, filename)
+        text_path = os.path.join(text_dir, f"{filename_slug or 'unknown-url'}.txt")
 
         try:
             with open(output_path, 'w', encoding='utf-8') as f:
-                f.write(text)
+                f.write(html_output)
             print(f"[SCRAPER] SAVED content from {url} to {output_path}")
         except Exception as e:
             print(f"[SCRAPER] ERROR writing file {output_path}: {e}")
+        try:
+            with open(text_path, 'w', encoding='utf-8') as f:
+                f.write(text_output)
+            print(f"[SCRAPER] SAVED text dump from {url} to {text_path}")
+        except Exception as e:
+            print(f"[SCRAPER] ERROR writing text file {text_path}: {e}")
 
 
                 # ============ [HELPER FNS] =============
