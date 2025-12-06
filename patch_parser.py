@@ -218,7 +218,6 @@ class PatchNoteParser:
     # Sections we should ignore entirely
     SKIP_SECTIONS = [
         "general updates",
-        "general",
         "competitive updates",
         "esports updates",
         "gameplay systems",
@@ -300,8 +299,10 @@ class PatchNoteParser:
 
     def __init__(self):
         # Pattern to match numerical changes: "X >>> Y", "X -> Y", "X to Y", etc.
+        # Allow units or symbols between the number and arrow (e.g., "40s → 60s", "15% → 10%").
         self.number_pattern = re.compile(
-            r"(\d+\.?\d*)\s*(?:>>>|->|→| to | from )\s*(\d+\.?\d*)", re.IGNORECASE
+            r"(\d+\.?\d*)\s*[a-z%]*\s*(?:>>>|->|→| to | from )\s*(\d+\.?\d*)",
+            re.IGNORECASE,
         )
 
         # Pattern to match modifiers (seconds, damage, etc.)
@@ -391,6 +392,12 @@ class PatchNoteParser:
         buff_count = sum(1 for keyword in self.BUFF_KEYWORDS if keyword in text_lower)
         nerf_count = sum(1 for keyword in self.NERF_KEYWORDS if keyword in text_lower)
         neutral_count = sum(1 for keyword in self.NEUTRAL_KEYWORDS if keyword in text_lower)
+
+        # Guard against obvious sign flips when no numeric parse is found.
+        if "cooldown" in text_lower and "increase" in text_lower and "decrease" not in text_lower:
+            nerf_count += 2
+        if "cost" in text_lower and "increase" in text_lower and "decrease" not in text_lower:
+            nerf_count += 2
 
         # Attributes where an increase is usually negative
         negative_attributes = [
@@ -538,6 +545,12 @@ class PatchNoteParser:
             if tag_name in {"p", "li"}:
                 line_counter += 1
                 line_num = line_counter
+
+                # Standalone agent bullet (e.g., "Breach" before nested list) sets context.
+                agent_only = self.extract_agent(text)
+                if agent_only and not self._is_relevant_line(text):
+                    current_agent = agent_only
+                    continue
 
                 if not self._is_relevant_line(text):
                     continue
