@@ -383,13 +383,21 @@ class PatchNoteParser:
             except ValueError:
                 pass
         else:
-            # Single number case: treat as new value only.
-            single_match = re.search(r"(\d+\.?\d*)", text)
-            if single_match:
+            #increases by percentages
+            by_pattern = re.search(r"by\s+(\d+\.?\d*)%", text, re.IGNORECASE)
+            if by_pattern:
                 try:
-                    new_val = float(single_match.group(1))
+                    new_val = float(by_pattern.group(1))
                 except ValueError:
                     pass
+            else:
+                #Single number case
+                single_match = re.search(r"(\d+\.?\d*)", text)
+                if single_match:
+                    try:
+                        new_val = float(single_match.group(1))
+                    except ValueError:
+                        pass
 
         unit_match = self.unit_pattern.search(text)
         if unit_match:
@@ -404,6 +412,30 @@ class PatchNoteParser:
     ) -> ChangeDirection:
         """Detect if change is a buff, nerf, or neutral using keywords and numerical context."""
         text_lower = text.lower()
+
+        #Special case of decay consistency is always a buff 
+        if "decay" in text_lower and "consistent" in text_lower and "instead of" in text_lower:
+            return ChangeDirection.BUFF
+        
+        #Special case of weapon buffs with percentage context
+        if ("weapon draw speed" in text_lower or "weapon recovery speed" in text_lower) and "increase" in text_lower and ("percent" in text_lower or "%" in text_lower):
+            return ChangeDirection.BUFF
+        
+        #Special case of Trapwire activation
+        if "trapwire" in text_lower and ("pc:" in text_lower or "console:" in text_lower):
+            # Extract values to check direction
+            if old_val is None or new_val is None:
+                old_val, new_val, unit = self.extract_values(text)
+            if old_val is not None and new_val is not None and new_val < old_val:
+                return ChangeDirection.BUFF
+        
+        #Special case of projectile speed increases
+        if "projectile speed" in text_lower and "increased" in text_lower:
+            return ChangeDirection.BUFF
+        
+        #Special case of activation time decreases
+        if ("activation" in text_lower or "activation time" in text_lower) and "decreased" in text_lower:
+            return ChangeDirection.BUFF
 
         if old_val is None or new_val is None:
             old_val, new_val, unit = self.extract_values(text)
@@ -426,6 +458,7 @@ class PatchNoteParser:
             "cost",
             "equip time",
             "activation delay",
+            "activation time",
             "delay",
             "recharge time",
             "battery recharge",
@@ -435,6 +468,7 @@ class PatchNoteParser:
             "cast time",
             "ultimate points",
             "ultimate point",
+            "ult points",
             "price",
             "nearsight",
             "decay",
@@ -465,6 +499,7 @@ class PatchNoteParser:
             "hindered",
             "marked",
             "deafen",
+            "projectile speed",
             "weapon draw speed",
             "weapon recovery speed",
             "fire rate",
@@ -477,6 +512,9 @@ class PatchNoteParser:
 
             has_negative_attr = any(word in text_lower for word in negative_attributes)
             has_positive_attr = any(word in text_lower for word in positive_attributes)
+            
+            # Special case: contextless time values (just "PC:" or "Console:") - decrease = buff
+            is_contextless_time = ("pc:" in text_lower or "console:" in text_lower) and not has_negative_attr and not has_positive_attr
 
             if has_negative_attr:
                 if is_increase:
@@ -487,6 +525,12 @@ class PatchNoteParser:
                 if is_increase:
                     buff_count += 5
                 if is_decrease:
+                    nerf_count += 5
+            elif is_contextless_time:
+                # Contextless times: decrease = buff (activation becomes faster)
+                if is_decrease:
+                    buff_count += 5
+                if is_increase:
                     nerf_count += 5
             else:
                 if is_increase:
@@ -505,7 +549,57 @@ class PatchNoteParser:
     def estimate_magnitude(
         self, text: str, old_val: Optional[float] = None, new_val: Optional[float] = None
     ) -> Magnitude:
-        """Estimate the magnitude of change using percent deltas only."""
+        """Estimate the magnitude of change using percent deltas and special case handling."""
+        text_lower = text.lower()
+        
+        #Special case of decay consistency is always unknown
+        if "decay" in text_lower and "consistent" in text_lower:
+            return Magnitude.UNKNOWN
+        
+        #Special case for ult/ultimate points where single point is minor and more is moderate
+        if ("ult" in text_lower and "points" in text_lower) or ("ultimate" in text_lower and "points" in text_lower):
+            if old_val is not None and new_val is not None and old_val != new_val:
+                point_diff = abs(old_val - new_val)
+                if point_diff == 1:
+                    return Magnitude.MINOR
+                return Magnitude.MODERATE
+        
+        #Sspecial case for cost changes - 100 credit is moderate, 50 credit is minor, 150+ is significant
+        if "cost" in text_lower and old_val is not None and new_val is not None:
+            cost_diff = abs(old_val - new_val)
+            if cost_diff >= 150:
+                return Magnitude.SIGNIFICANT
+            if cost_diff >= 100:
+                return Magnitude.MODERATE
+            if cost_diff >= 50:
+                return Magnitude.MINOR
+        
+        #Special case of trapwire activation time with PC/Console format
+        if ("trapwire" in text_lower or "activation" in text_lower) and ("pc:" in text_lower or "console:" in text_lower) and old_val is not None and new_val is not None:
+            time_diff = abs(old_val - new_val)
+            if time_diff >= 0.6:  #0.6s or more
+                return Magnitude.SIGNIFICANT
+            if time_diff >= 0.3:  #0.3s or more
+                return Magnitude.MODERATE
+            return Magnitude.MINOR
+        
+        #Special case of weapon buffs with percentage context
+        if ("weapon draw speed" in text_lower or "weapon recovery speed" in text_lower) and "by" in text_lower and ("%" in text_lower or "percent" in text_lower):
+            if new_val is not None or old_val is not None:
+                val = new_val if new_val is not None else old_val
+                if val <= 10:
+                    return Magnitude.MINOR
+                if val <= 30:
+                    return Magnitude.MODERATE
+                return Magnitude.SIGNIFICANT
+            text_val, _, _ = self.extract_values(text)
+            if text_val is not None:
+                if text_val <= 10:
+                    return Magnitude.MINOR
+                if text_val <= 30:
+                    return Magnitude.MODERATE
+                return Magnitude.SIGNIFICANT
+        
         if old_val is None or new_val is None or old_val == 0:
             return Magnitude.UNKNOWN
 
